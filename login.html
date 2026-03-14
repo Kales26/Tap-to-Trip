@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login / Booking — Tap to Trip</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --aqua:#1FA3B1; --aqua-light:#38c5d5; --aqua-glow:rgba(31,163,177,.4);
+  --gold:#C9A84C; --gold-light:#e8c97e;
+  --cream:#F8F0E3; --dark:#04070D;
+  --error:#e05c5c;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+html,body{overflow:hidden;width:100%;height:100%;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--aqua),var(--gold));border-radius:10px;}
+
+body{background:var(--dark);color:white;}
+
+body::after{
+  content:"";position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:99990;opacity:.35;
+}
+
+/* ── NAVBAR ── */
+.navbar{
+  position:fixed;width:100%;top:0;left:0;z-index:1000;
+  padding:18px 60px;
+  display:flex;justify-content:center;align-items:center;
+  background:rgba(4,7,13,.18);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 1px 0 rgba(255,255,255,.05);
+}
+.logo-img{
+  height:26px;width:auto;
+  filter:drop-shadow(0 0 10px rgba(31,163,177,.5));
+  transition:.3s;
+}
+.logo-img:hover{filter:drop-shadow(0 0 20px rgba(31,163,177,.9));transform:scale(1.04);}
+
+/* ── SECTION ── */
+.door-section{
+  position:relative;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.door-video{
+  position:absolute;width:100%;height:100%;
+  object-fit:cover;z-index:-2;
+}
+.door-overlay{
+  position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(135deg,rgba(4,7,13,.72) 0%,rgba(4,7,13,.48) 50%,rgba(4,7,13,.7) 100%);
+}
+
+/* ── GLASS CARD ── */
+.door-glass{
+  width:90%;max-width:520px;
+  padding:28px 32px;
+  border-radius:30px;
+  background:rgba(255,255,255,.05);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.05) inset,0 30px 80px rgba(0,0,0,.65);
+  text-align:center;
+  margin-top:72px;
+  position:relative;
+}
+.door-glass::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:35%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+/* ── HEADING ── */
+.glass-header{text-align:center;margin-bottom:18px;}
+.glass-eyebrow{
+  display:block;font-size:10px;font-weight:600;
+  letter-spacing:5px;text-transform:uppercase;
+  color:var(--gold-light);opacity:.75;margin-bottom:7px;
+}
+.door-glass h2{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-size:32px;font-weight:900;letter-spacing:-1px;line-height:.95;color:#fff;
+}
+.door-glass h2 span{
+  color:var(--aqua);font-family:'Big Shoulders Display',sans-serif;
+  text-shadow:0 0 30px rgba(31,163,177,.3);
+}
+.glass-header::after{
+  content:"";display:block;width:56px;height:2px;
+  background:linear-gradient(90deg,var(--aqua),var(--gold));
+  border-radius:2px;margin:8px auto 0;
+}
+
+/* ── TRIP SUMMARY CHIPS ── */
+.trip-summary{
+  display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+  margin-bottom:12px;
+}
+.chip{
+  font-family:'Outfit',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;
+  padding:4px 12px;border-radius:20px;
+  background:rgba(31,163,177,.08);
+  border:1px solid rgba(31,163,177,.2);
+  color:rgba(255,255,255,.6);
+  display:flex;align-items:center;gap:5px;
+}
+.chip i{font-size:9px;color:var(--aqua);}
+
+/* ── FORM ── */
+.form-group{
+  margin-bottom:10px;text-align:left;position:relative;
+}
+.form-group label{
+  font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  opacity:.55;color:#fff;display:block;margin-bottom:4px;
+}
+.input-wrap{position:relative;}
+.input-icon{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  color:rgba(255,255,255,.25);font-size:13px;
+  pointer-events:none;transition:.3s;
+}
+.form-group input{
+  width:100%;padding:10px 14px 10px 40px;
+  border-radius:14px;border:1px solid rgba(255,255,255,.12);
+  outline:none;background:rgba(255,255,255,.06);
+  color:white;font-size:14px;letter-spacing:.3px;transition:.3s;
+  font-family:'Outfit',sans-serif;
+}
+.form-group input::placeholder{color:rgba(255,255,255,.22);}
+.form-group input:focus{
+  border-color:var(--aqua);background:rgba(255,255,255,.09);
+  box-shadow:0 0 0 3px rgba(31,163,177,.1);
+}
+.input-wrap:focus-within .input-icon{color:var(--aqua);}
+
+/* input invalid state */
+.form-group input.invalid{
+  border-color:var(--error) !important;
+  box-shadow:0 0 0 3px rgba(224,92,92,.15) !important;
+}
+.field-hint{
+  font-size:10px;letter-spacing:.5px;
+  color:rgba(255,255,255,.35);
+  margin-top:4px;padding-left:4px;
+  display:block;transition:.3s;
+}
+.field-hint.error{color:var(--error);}
+
+/* char counter for mobile */
+.char-counter{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:10px;font-weight:600;letter-spacing:.5px;
+  color:rgba(255,255,255,.25);transition:.3s;
+  pointer-events:none;
+}
+.char-counter.at-limit{color:var(--aqua);}
+
+/* ── SUBMIT BUTTON ── */
+.submit-btn{
+  margin-top:14px;width:100%;padding:15px;
+  border:none;border-radius:50px;
+  background:linear-gradient(135deg,var(--aqua),#0f6f79);
+  color:white;font-size:14px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:.35s;
+  box-shadow:0 0 20px rgba(31,163,177,.35);
+  position:relative;overflow:hidden;
+  font-family:'Outfit',sans-serif;
+}
+.submit-btn::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);
+  opacity:0;transition:.35s;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(31,163,177,.6);}
+.submit-btn:hover::before{opacity:1;}
+
+/* ── TOAST ── */
+.premium-toast{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;
+  background:rgba(4,7,13,.82);backdrop-filter:blur(22px);
+  z-index:9999;opacity:0;pointer-events:none;transition:opacity .5s ease;
+}
+.premium-toast.show{opacity:1;pointer-events:auto;}
+.toast-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(31,163,177,.12);border:1.5px solid rgba(31,163,177,.4);
+  display:flex;align-items:center;justify-content:center;
+  animation:ringPulse 1.8s ease infinite;
+}
+.toast-icon i{font-size:28px;color:var(--aqua);}
+.toast-title{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-size:36px;font-weight:900;letter-spacing:-1px;color:#fff;
+}
+.toast-sub{font-size:13px;color:rgba(255,255,255,.45);letter-spacing:.5px;}
+.toast-line{width:48px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--aqua),var(--gold));}
+@keyframes ringPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(31,163,177,.3);}
+  50%{box-shadow:0 0 0 14px rgba(31,163,177,0);}
+}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .navbar{padding:12px 20px;}
+  .logo-img{height:20px;}
+  .door-glass{padding:28px 22px;margin-top:70px;border-radius:22px;}
+  .door-glass h2{font-size:28px;}
+  .submit-btn{font-size:13px;padding:13px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <div class="logo"><img src="logo.png" class="logo-img"></div>
+</div>
+
+<section class="door-section">
+  <video autoplay muted loop class="door-video">
+    <source src="depart-date-bg.mp4" type="video/mp4">
+  </video>
+  <div class="door-overlay"></div>
+
+  <div class="door-glass">
+    <div class="glass-header">
+      <span class="glass-eyebrow">Final step</span>
+      <h2>Enter <span>Details</span></h2>
+    </div>
+
+    <!-- trip summary chips -->
+    <div class="trip-summary" id="tripSummary"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Username</label>
+        <div class="input-wrap">
+          <input type="text" id="nameInput" placeholder="Your name" required>
+          <i class="fa-regular fa-user input-icon"></i>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <!-- exactly 8 characters, min 8, max 8 -->
+          <input
+            type="password"
+            id="passwordInput"
+            placeholder="••••••••"
+            minlength="8"
+            maxlength="8"
+            required>
+          <i class="fa-solid fa-lock input-icon"></i>
+        </div>
+        <span class="field-hint" id="passHint">Must be exactly 8 characters</span>
+      </div>
+
+      <div class="form-group">
+        <label>Mobile number</label>
+        <div class="input-wrap">
+          <!-- only digits, exactly 10 -->
+          <input
+            type="tel"
+            id="mobileInput"
+            placeholder="00000 00000"
+            maxlength="10"
+            pattern="\d{10}"
+            inputmode="numeric"
+            required>
+          <i class="fa-solid fa-phone input-icon"></i>
+          <span class="char-counter" id="mobileCounter">0/10</span>
+        </div>
+        <span class="field-hint" id="mobileHint">Enter exactly 10 digits</span>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <div class="input-wrap">
+          <input type="email" id="emailInput" placeholder="you@email.com" required>
+          <i class="fa-regular fa-envelope input-icon"></i>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <i class="fa-solid fa-paper-plane" style="margin-right:8px;font-size:12px;"></i>
+        Submit &amp; Book
+      </button>
+    </form>
+
+    <div class="premium-toast" id="successMsg">
+      <div class="toast-icon"><i class="fa-solid fa-check"></i></div>
+      <div class="toast-line"></div>
+      <div class="toast-title">Reservation confirmed</div>
+      <div class="toast-sub">Your trip has been successfully booked</div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ── Format date from YYYY-M-D → D Month YYYY ──
+function formatDate(raw){
+  if(!raw) return null;
+  const parts = raw.split("-");
+  if(parts.length !== 3) return raw;
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const d = parseInt(parts[2]);
+  const m = parseInt(parts[1]) - 1;
+  const y = parts[0];
+  return `${d} ${months[m]} ${y}`;
+}
+
+// ── Trip summary chips ──
+const summary = document.getElementById("tripSummary");
+const items = [
+  { key:"selectedPlace",  icon:"fa-location-dot" },
+  { key:"travellerType",  icon:"fa-users" },
+  { key:"tripDuration",   icon:"fa-clock",           suffix:" days" },
+  { key:"departureCity",  icon:"fa-plane-departure" },
+  { key:"departureDate",  icon:"fa-calendar",        format:"date" },
+];
+items.forEach(item => {
+  let val = localStorage.getItem(item.key);
+  if(val){
+    if(item.format === "date") val = formatDate(val);
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.innerHTML = `<i class="fa-solid ${item.icon}"></i>${val}${item.suffix||""}`;
+    summary.appendChild(chip);
+  }
+});
+
+// ── Mobile: only allow numeric input & live counter ──
+const mobileInput  = document.getElementById("mobileInput");
+const mobileCounter= document.getElementById("mobileCounter");
+const mobileHint   = document.getElementById("mobileHint");
+
+mobileInput.addEventListener("input", function(){
+  // Strip non-digits
+  this.value = this.value.replace(/\D/g, "").slice(0, 10);
+  const len = this.value.length;
+  mobileCounter.textContent = `${len}/10`;
+  mobileCounter.classList.toggle("at-limit", len === 10);
+
+  if(len > 0 && len < 10){
+    this.classList.add("invalid");
+    mobileHint.textContent = `${10 - len} more digit${10 - len > 1 ? "s" : ""} needed`;
+    mobileHint.classList.add("error");
+  } else if(len === 10){
+    this.classList.remove("invalid");
+    mobileHint.textContent = "Looks good!";
+    mobileHint.classList.remove("error");
+    mobileHint.style.color = "var(--aqua)";
+  } else {
+    this.classList.remove("invalid");
+    mobileHint.textContent = "Enter exactly 10 digits";
+    mobileHint.classList.remove("error");
+    mobileHint.style.color = "";
+  }
+});
+
+// Prevent non-numeric key presses
+mobileInput.addEventListener("keypress", function(e){
+  if(!/[0-9]/.test(e.key)) e.preventDefault();
+});
+
+// ── Password: exactly 8 characters ──
+const passwordInput = document.getElementById("passwordInput");
+const passHint      = document.getElementById("passHint");
+
+passwordInput.addEventListener("input", function(){
+  const len = this.value.length;
+  if(len > 0 && len < 8){
+    this.classList.add("invalid");
+    passHint.textContent = `${8 - len} more character${8 - len > 1 ? "s" : ""} needed`;
+    passHint.classList.add("error");
+    passHint.style.color = "";
+  } else if(len === 8){
+    this.classList.remove("invalid");
+    passHint.textContent = "Perfect length!";
+    passHint.classList.remove("error");
+    passHint.style.color = "var(--aqua)";
+  } else {
+    this.classList.remove("invalid");
+    passHint.textContent = "Must be exactly 8 characters";
+    passHint.classList.remove("error");
+    passHint.style.color = "";
+  }
+});
+
+// ── Form submit ──
+const form = document.getElementById("loginForm");
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  // Extra client-side guard
+  const mobile = mobileInput.value;
+  const pass   = passwordInput.value;
+
+  if(mobile.length !== 10 || !/^\d{10}$/.test(mobile)){
+    mobileInput.classList.add("invalid");
+    mobileHint.textContent = "Mobile number must be exactly 10 digits";
+    mobileHint.classList.add("error");
+    mobileInput.focus();
+    return;
+  }
+  if(pass.length !== 8){
+    passwordInput.classList.add("invalid");
+    passHint.textContent = "Password must be exactly 8 characters";
+    passHint.classList.add("error");
+    passwordInput.focus();
+    return;
+  }
+
+  localStorage.setItem("bookingName",   document.getElementById("nameInput").value);
+  localStorage.setItem("bookingMobile", mobile);
+  localStorage.setItem("bookingEmail",  document.getElementById("emailInput").value);
+  window.location.href = "payment.html";
+});
+</script>
+
+</body>
+</html>

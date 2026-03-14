@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Departure City — Tap to Trip</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --aqua:#1FA3B1; --aqua-light:#38c5d5; --aqua-glow:rgba(31,163,177,.4);
+  --gold:#C9A84C; --gold-light:#e8c97e;
+  --cream:#F8F0E3; --dark:#04070D;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+html,body{overflow:hidden;width:100%;height:100%;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--aqua),var(--gold));border-radius:10px;}
+
+body{
+  background:var(--dark);color:white;overflow-x:hidden;
+  opacity:0;transition:opacity 0.4s ease;
+}
+body.loaded{opacity:1;}
+
+body::after{
+  content:"";position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:99990;opacity:.35;
+}
+
+/* ── NAVBAR ── */
+.navbar{
+  position:fixed;width:100%;top:0;left:0;z-index:1000;
+  padding:18px 60px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(4,7,13,.18);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 1px 0 rgba(255,255,255,.05);
+  transition:.4s ease;
+}
+.navbar.scrolled{
+  background:rgba(4,7,13,.82);
+  backdrop-filter:blur(24px);
+  box-shadow:0 8px 40px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.04);
+  padding:14px 60px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.logo-img{
+  height:26px;width:auto;
+  filter:drop-shadow(0 0 10px rgba(31,163,177,.5));
+  transition:.3s;
+}
+.logo-img:hover{filter:drop-shadow(0 0 20px rgba(31,163,177,.9));transform:scale(1.04);}
+
+/* ── PROGRESS STEPS ── */
+.trip-steps{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;gap:0;align-items:center;white-space:nowrap;
+}
+.step{
+  font-size:12px;font-weight:500;color:rgba(255,255,255,.4);
+  letter-spacing:.5px;cursor:pointer;transition:.3s;
+  padding:6px 0;display:flex;align-items:center;gap:8px;
+}
+.step-num{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;transition:.3s;flex-shrink:0;
+}
+.step.done .step-num{background:rgba(201,168,76,.18);border-color:rgba(201,168,76,.5);color:var(--gold-light);}
+.step.done{color:rgba(255,255,255,.45);}
+.step.active .step-num{background:var(--aqua);border-color:var(--aqua);box-shadow:0 0 14px rgba(31,163,177,.55);color:#fff;}
+.step.active{color:#fff;font-weight:600;}
+.step:hover:not(.active):not(.done){color:rgba(255,255,255,.7);}
+.step-connector{
+  width:32px;height:1px;background:rgba(255,255,255,.12);
+  margin:0 4px;flex-shrink:0;position:relative;overflow:hidden;
+}
+.step-connector::after{
+  content:"";position:absolute;left:0;top:0;height:100%;width:0%;
+  background:linear-gradient(90deg,var(--aqua),var(--gold));transition:.5s ease;
+}
+.step-connector.done::after{width:100%;}
+
+/* ── SECTION ── */
+.door-section{
+  position:relative;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.door-video{
+  position:absolute;width:100%;height:100%;
+  object-fit:cover;z-index:-2;
+}
+.door-overlay{
+  position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(135deg,rgba(4,7,13,.75) 0%,rgba(4,7,13,.55) 50%,rgba(4,7,13,.72) 100%);
+}
+
+/* ── GLASS CARD ── */
+.door-glass{
+  width:90%;max-width:900px;
+  padding:36px 40px;
+  border-radius:24px;
+  background:rgba(255,255,255,.03);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.05) inset,0 30px 80px rgba(0,0,0,.65);
+  text-align:center;
+  margin-top:80px;
+  position:relative;
+}
+.door-glass::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:30%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+/* ── HEADING ── */
+.glass-header{text-align:center;margin-bottom:22px;}
+.glass-eyebrow{
+  display:block;font-size:10px;font-weight:600;
+  letter-spacing:5px;text-transform:uppercase;
+  color:var(--gold-light);opacity:.75;margin-bottom:10px;
+}
+.door-glass h2{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-size:34px;font-weight:900;letter-spacing:-1px;line-height:.95;color:#fff;
+}
+.door-glass h2 span{
+  color:var(--aqua);font-family:'Big Shoulders Display',sans-serif;
+  text-shadow:0 0 30px rgba(31,163,177,.3);
+}
+.glass-header::after{
+  content:"";display:block;width:56px;height:2px;
+  background:linear-gradient(90deg,var(--aqua),var(--gold));
+  border-radius:2px;margin:10px auto 0;
+}
+
+/* ── SEARCH BOX ── */
+.search-wrapper{position:relative;margin-bottom:16px;}
+.search-icon-inner{
+  position:absolute;left:20px;top:50%;transform:translateY(-50%);
+  color:rgba(255,255,255,.35);font-size:15px;pointer-events:none;transition:.3s;
+}
+.search-box{
+  width:100%;padding:12px 20px 12px 44px;
+  border-radius:50px;
+  border:1.5px solid rgba(255,255,255,.12);
+  font-size:14px;outline:none;
+  background:rgba(255,255,255,.07);
+  color:white;backdrop-filter:blur(6px);
+  font-family:'Outfit',sans-serif;font-weight:400;
+  transition:.3s;letter-spacing:.3px;
+}
+.search-box::placeholder{color:rgba(255,255,255,.35);}
+.search-box:focus{
+  border-color:var(--aqua);
+  background:rgba(255,255,255,.09);
+  box-shadow:0 0 0 3px rgba(31,163,177,.1);
+}
+.search-wrapper:focus-within .search-icon-inner{color:var(--aqua);}
+
+/* ── CITY LIST ── */
+.city-list{
+  max-height:280px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:6px;
+  padding-right:4px;
+}
+.city-list::-webkit-scrollbar{width:4px;}
+.city-list::-webkit-scrollbar-track{background:transparent;}
+.city-list::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,var(--aqua),var(--gold));border-radius:10px;
+}
+.city-item{
+  background:rgba(255,255,255,.05);
+  padding:11px 16px;border-radius:12px;
+  cursor:pointer;transition:.25s ease;
+  display:flex;align-items:center;gap:10px;
+  border:1px solid rgba(255,255,255,.05);text-align:left;
+}
+.city-item:hover{
+  background:rgba(31,163,177,.12);
+  border-color:rgba(31,163,177,.25);
+  transform:translateX(4px);
+}
+.city-item:active{transform:scale(.97);background:rgba(31,163,177,.25);}
+.city-item > span:first-child{
+  font-family:'Outfit',sans-serif;
+  font-size:14px;font-weight:500;
+  color:rgba(255,255,255,.88);
+  letter-spacing:.2px;flex:1;
+}
+.city-code{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  color:var(--aqua);
+  background:rgba(31,163,177,.1);border:1px solid rgba(31,163,177,.2);
+  padding:2px 8px;border-radius:6px;flex-shrink:0;
+}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .navbar{
+    padding:10px 16px 8px;
+    flex-direction:column;align-items:center;
+    gap:8px;justify-content:flex-start;
+  }
+  .logo{position:static;width:100%;display:flex;justify-content:center;}
+  .logo-img{height:20px;}
+  .trip-steps{
+    position:static;transform:none;
+    width:100%;display:flex;
+    overflow-x:auto;overflow-y:visible;
+    gap:0;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;padding-bottom:2px;
+  }
+  .trip-steps::-webkit-scrollbar{display:none;}
+  .step{font-size:10px;white-space:nowrap;flex-shrink:0;}
+  .step-num{width:17px;height:17px;font-size:8px;}
+  .step-connector{width:16px;flex-shrink:0;}
+
+  .door-glass{
+    width:95%;max-width:400px;
+    padding:28px 18px;margin-top:90px;border-radius:22px;
+  }
+  .door-glass h2{font-size:26px;}
+  .search-box{font-size:14px;padding:13px 18px 13px 44px;}
+  .city-item{padding:11px 14px;font-size:13px;}
+  .city-code{font-size:10px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar" id="navbar">
+  <div class="logo"><img src="logo.png" class="logo-img"></div>
+
+  <div class="trip-steps">
+    <span class="step done" onclick="goDestination()">
+      <span class="step-num"><i class="fa-solid fa-check" style="font-size:8px;"></i></span>
+      Destination
+    </span>
+    <div class="step-connector done"></div>
+    <span class="step done" onclick="goTravellers()">
+      <span class="step-num"><i class="fa-solid fa-check" style="font-size:8px;"></i></span>
+      Travellers
+    </span>
+    <div class="step-connector done"></div>
+    <span class="step done" onclick="goDuration()">
+      <span class="step-num"><i class="fa-solid fa-check" style="font-size:8px;"></i></span>
+      Duration
+    </span>
+    <div class="step-connector done"></div>
+    <span class="step active">
+      <span class="step-num">4</span>
+      Departure city
+    </span>
+    <div class="step-connector"></div>
+    <span class="step">
+      <span class="step-num">5</span>
+      Departure date
+    </span>
+  </div>
+
+  <div style="width:28px;"></div>
+</div>
+
+<section class="door-section">
+  <video autoplay muted loop class="door-video">
+    <source src="depart-city-bg.mp4" type="video/mp4">
+  </video>
+  <div class="door-overlay"></div>
+
+  <div class="door-glass">
+    <div class="glass-header">
+      <span class="glass-eyebrow">Step 4 of 5</span>
+      <h2>Select <span>Departure city</span></h2>
+    </div>
+
+    <div class="search-wrapper">
+      <input type="text" id="search" class="search-box" placeholder="Search city or airport code...">
+      <i class="fa-solid fa-magnifying-glass search-icon-inner"></i>
+    </div>
+
+    <div class="city-list" id="cityList"></div>
+  </div>
+</section>
+
+<script>
+const cities = [
+["Bengaluru","BLR"],["Chennai","MAA"],["New Delhi","DEL"],["Mumbai","BOM"],
+["Hyderabad","HYD"],["Trivandrum","TRV"],["Ahmedabad","AMD"],["Kolkata","CCU"],
+["Kochi","COK"],["Coimbatore","CJB"],["Nagpur","NAG"],["Jaipur","JAI"],
+["Trichy","TRZ"],["Amritsar","ATQ"],["Lucknow","LKO"],["Bhubaneshwar","BBI"],
+["Pune","PNQ"],["Madurai","IXM"],["Varanasi","VNS"],["Goa","GOI"],
+["Chandigarh","IXC"],["Vadodara","BDQ"],["Guwahati","GAU"],["Visakhapatnam","VTZ"],
+["Aurangabad","IXU"],["Mangalore","IXE"],["Indore","IDR"],["Udaipur","UDR"],
+["Ranchi","IXR"],["Kozhikode","CCJ"],["Raipur","RPR"],["Patna","PAT"],
+["Pondicherry","PNY"],["Kannur","CNN"],["Tirupati","TIR"],["Jaisalmer","JSA"],
+["Jodhpur","JDH"],["Bikaner","BKB"],["Bharatpur","BHR"],["Kishangarh","KQH"],
+["Gwalior","GWL"],["Shillong","SHL"],["Mysore","MYQ"],["Aizawl","AJL"],
+["Imphal","IMF"],["Tezpur","TEZ"],["Agartala","IXA"],["Jorhat","JRH"],
+["Dibrugarh","DIB"],["Agra","AGR"],["Salem","SXV"],["Dharamshala","DHM"],
+["Dehradun","DED"],["Shimla","SLV"],["Kullu","KUU"],["Port Blair","IXZ"],
+["Nashik","ISK"],["Leh","IXL"],["Srinagar","SXR"],["Bhuj","BHJ"],
+["Jammu","IXJ"],["Kadapa","CDP"],["Surat","STV"],["Vijayawada","VGA"],
+["Kandla","IXY"],["Jamnagar","JGA"],["Porbandar","PBD"],["Rajkot","HSR"],
+["Bokaro","BKR"],["Jabalpur","JLR"],["Jamshedpur","IXW"],["Bellary","BEP"],
+["Belgaum","IXG"],["Kalaburagi","GBI"],["Hubli","HBX"],["Satna","TNI"],
+["Yavatmal","YTL"],["Nanded","NDC"],["Kolhapur","KLH"],["Solapur","SSL"],
+["Jalgaon","JLG"],["Akola","AKD"],["Dimapur","DMU"],["Jharsuguda","JRG"],
+["Jeypore","PYB"],["Pantnagar","PGH"],["Ludhiana","LUH"],["Kota","KTU"],
+["Kanpur","KNU"],["Gorakhpur","GOP"],["Pithoragarh","NNS"],["Rajahmundry","RJA"],
+["Pasighat","IXT"],["Bilaspur","PAB"],["Diu","DIU"],["Hisar","HSS"],
+["Jalandhar","AIP"],["Shirdi","SAG"],["Ajmer","KQH"],["Bathinda","BUP"],
+["Pathankot","IXP"],["Gangtok","PYG"],["Balurghat","RGH"],["Ghaziabad","HDO"],
+["Durgapur","RDP"],["Bhopal","BHO"],["Gaya","GAY"]
+];
+
+const cityList = document.getElementById("cityList");
+const search   = document.getElementById("search");
+
+function renderCities(filter=""){
+  cityList.innerHTML = "";
+  const filtered = cities.filter(c =>
+    c[0].toLowerCase().includes(filter.toLowerCase()) ||
+    c[1].toLowerCase().includes(filter.toLowerCase())
+  );
+  if(filtered.length === 0){
+    cityList.innerHTML = `<div style="opacity:.5;padding:14px;font-size:13px;">No cities found</div>`;
+    return;
+  }
+  filtered.forEach(city => {
+    const div = document.createElement("div");
+    div.className = "city-item";
+    div.innerHTML = `<span>${city[0]}</span><span class="city-code">${city[1]}</span>`;
+    div.onclick = () => selectCity(city[0], city[1]);
+    cityList.appendChild(div);
+  });
+}
+
+function selectCity(city, code){
+  localStorage.setItem("departureCity", city);
+  localStorage.setItem("departureCode", code);
+  window.location.href = "depart-date.html";
+}
+
+search.addEventListener("input", e => renderCities(e.target.value));
+renderCities();
+
+window.onload = () => document.body.classList.add("loaded");
+
+window.addEventListener('scroll', ()=>{
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+function goDestination(){ window.location.href = "details-one.html"; }
+function goTravellers(){  window.location.href = "travellers.html"; }
+function goDuration(){    window.location.href = "duration.html"; }
+function goDepartureDate(){ window.location.href = "depart-date.html"; }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment — Tap to Trip</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="pricing.js"></script>
+
+<style>
+:root{
+  --aqua:#1FA3B1; --aqua-light:#38c5d5; --aqua-glow:rgba(31,163,177,.4);
+  --gold:#C9A84C; --gold-light:#e8c97e;
+  --cream:#F8F0E3; --dark:#04070D;
+  --card-bg:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.09);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+html,body{overflow-x:hidden;width:100%;min-height:100%;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--aqua),var(--gold));border-radius:10px;}
+
+body{background:var(--dark);color:white;opacity:0;animation:pageIn .5s ease forwards;}
+@keyframes pageIn{to{opacity:1;}}
+
+body::after{
+  content:"";position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:99990;opacity:.35;
+}
+
+.bg-video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+.bg-overlay{position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(4,7,13,.92) 0%,rgba(4,7,13,.78) 50%,rgba(4,7,13,.92) 100%);}
+
+.navbar{
+  position:fixed;width:100%;top:0;left:0;z-index:1000;
+  padding:18px 60px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,0,0,.18);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.logo-img{height:26px;filter:drop-shadow(0 0 10px rgba(31,163,177,.5));transition:.3s;}
+.logo-img:hover{filter:drop-shadow(0 0 22px rgba(31,163,177,.9));transform:scale(1.04);}
+.nav-secure{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.38);letter-spacing:.5px;}
+.nav-secure i{color:var(--aqua);font-size:11px;}
+
+.main{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 20px 60px;}
+
+.pay-wrap{
+  width:100%;max-width:1060px;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:24px;
+  animation:slideUp .7s cubic-bezier(.23,1,.32,1) forwards;
+  opacity:0;animation-delay:.15s;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:none;}}
+
+.glass{
+  background:rgba(255,255,255,.04);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.1);border-radius:28px;
+  padding:36px;position:relative;overflow:hidden;
+}
+.glass::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:45%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+.order-eyebrow{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--gold-light);opacity:.7;margin-bottom:8px;display:block;}
+.order-title{font-family:'Big Shoulders Display',sans-serif;font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1;color:#fff;margin-bottom:4px;}
+.order-title span{color:var(--aqua);}
+.order-sub{font-size:13px;color:rgba(255,255,255,.35);letter-spacing:.3px;margin-bottom:28px;}
+
+.dest-card{border-radius:18px;overflow:hidden;position:relative;height:140px;margin-bottom:24px;border:1px solid rgba(255,255,255,.07);}
+.dest-card-img{width:100%;height:100%;object-fit:cover;filter:brightness(.52);}
+.dest-card-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(4,7,13,.88),rgba(4,7,13,.2));display:flex;align-items:center;padding:0 22px;gap:16px;}
+.dest-card-name{font-family:'Big Shoulders Display',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-1px;}
+.dest-card-badge{padding:4px 12px;border-radius:20px;background:rgba(31,163,177,.15);border:1px solid rgba(31,163,177,.3);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--aqua-light);}
+
+.trip-rows{display:flex;flex-direction:column;gap:0;margin-bottom:24px;}
+.trip-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.trip-row:last-child{border-bottom:none;}
+.trip-row-label{font-size:12px;color:rgba(255,255,255,.35);display:flex;align-items:center;gap:8px;}
+.trip-row-label i{font-size:11px;color:var(--aqua);width:14px;}
+.trip-row-value{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);}
+
+.price-box{border-radius:16px;padding:18px 20px;background:linear-gradient(135deg,rgba(31,163,177,.1),rgba(31,163,177,.03));border:1px solid rgba(31,163,177,.2);display:flex;align-items:center;justify-content:space-between;}
+.price-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);}
+.price-amount{font-family:'Big Shoulders Display',sans-serif;font-size:38px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1;}
+.price-amount small{font-size:16px;color:rgba(255,255,255,.4);font-weight:400;letter-spacing:0;}
+.price-per{font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;}
+
+.trust-row{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;}
+.trust-badge{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);font-size:10px;color:rgba(255,255,255,.35);}
+.trust-badge i{font-size:10px;color:var(--gold);}
+
+.pay-methods{display:flex;gap:10px;margin-bottom:24px;}
+.method-tab{flex:1;padding:12px 8px;border-radius:14px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:.25s;font-size:11px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.35);text-transform:uppercase;}
+.method-tab i{font-size:18px;}
+.method-tab:hover{border-color:rgba(31,163,177,.3);color:rgba(255,255,255,.6);}
+.method-tab.active{border-color:var(--aqua);background:rgba(31,163,177,.1);color:#fff;box-shadow:0 0 20px rgba(31,163,177,.15);}
+.method-tab.active i{color:var(--aqua);}
+
+.pay-panel{display:none;}
+.pay-panel.active{display:block;}
+
+.qr-section{display:flex;flex-direction:column;align-items:center;gap:0;}
+.qr-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light);opacity:.7;margin-bottom:14px;}
+
+.qr-frame{position:relative;width:190px;height:190px;display:flex;align-items:center;justify-content:center;}
+.qr-corner{position:absolute;width:22px;height:22px;border-color:var(--aqua);border-style:solid;opacity:.7;}
+.qr-corner.tl{top:0;left:0;border-width:2px 0 0 2px;border-radius:6px 0 0 0;}
+.qr-corner.tr{top:0;right:0;border-width:2px 2px 0 0;border-radius:0 6px 0 0;}
+.qr-corner.bl{bottom:0;left:0;border-width:0 0 2px 2px;border-radius:0 0 0 6px;}
+.qr-corner.br{bottom:0;right:0;border-width:0 2px 2px 0;border-radius:0 0 6px 0;}
+
+#qrcode{width:160px;height:160px;background:white;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 30px rgba(31,163,177,.2);}
+#qrcode canvas,#qrcode img{width:160px!important;height:160px!important;}
+
+.qr-scan-hint{margin-top:14px;font-size:12px;color:rgba(255,255,255,.35);text-align:center;display:flex;align-items:center;gap:6px;}
+.qr-scan-hint i{color:var(--aqua);font-size:11px;}
+
+.upi-chip{margin-top:14px;display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:50px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);}
+.upi-chip span{font-family:'DM Mono',monospace;font-size:13px;color:rgba(255,255,255,.7);letter-spacing:.5px;}
+.upi-copy{width:28px;height:28px;border-radius:50%;background:rgba(31,163,177,.1);border:1px solid rgba(31,163,177,.25);color:var(--aqua);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.upi-copy:hover{background:rgba(31,163,177,.2);}
+
+.or-divider{display:flex;align-items:center;gap:12px;margin:20px 0;width:100%;}
+.or-divider-line{flex:1;height:1px;background:rgba(255,255,255,.07);}
+.or-divider-text{font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;}
+
+.upi-apps{display:flex;gap:10px;width:100%;}
+.upi-app-btn{flex:1;padding:12px 10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:.25s;font-size:12px;font-weight:600;color:rgba(255,255,255,.55);text-decoration:none;}
+.upi-app-btn:hover{border-color:rgba(31,163,177,.3);background:rgba(31,163,177,.07);color:#fff;transform:translateY(-2px);}
+.upi-app-btn img{width:22px;height:22px;border-radius:6px;object-fit:contain;}
+
+.form-group{margin-bottom:16px;}
+.form-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:6px;}
+.form-input{width:100%;padding:13px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:white;font-size:14px;outline:none;font-family:'Outfit',sans-serif;letter-spacing:.3px;transition:.3s;}
+.form-input::placeholder{color:rgba(255,255,255,.2);}
+.form-input:focus{border-color:var(--aqua);background:rgba(255,255,255,.07);box-shadow:0 0 0 3px rgba(31,163,177,.1);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.card-icons{display:flex;gap:8px;margin-bottom:16px;align-items:center;}
+.card-icon{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;min-width:48px;height:32px;}
+
+.bank-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px;}
+.bank-item{padding:11px 12px;border-radius:14px;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);display:flex;align-items:center;gap:10px;cursor:pointer;transition:.25s;text-decoration:none;color:inherit;}
+.bank-item:hover{border-color:rgba(31,163,177,.35);background:rgba(31,163,177,.07);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3);}
+.bank-logo-img{width:34px;height:34px;object-fit:contain;flex-shrink:0;border-radius:8px;background:white;padding:4px;}
+.bank-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);line-height:1.2;}
+.bank-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px;}
+.bank-arrow{margin-left:auto;font-size:10px;color:rgba(31,163,177,.4);transition:.25s;flex-shrink:0;}
+.bank-item:hover .bank-arrow{color:var(--aqua);transform:translate(2px,-2px);}
+
+.pay-btn{width:100%;padding:17px;margin-top:20px;border:none;border-radius:50px;background:linear-gradient(135deg,var(--aqua),#0f6f79);color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.35s;box-shadow:0 0 28px rgba(31,163,177,.35);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;}
+.pay-btn::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);opacity:0;transition:.35s;}
+.pay-btn:hover{transform:translateY(-2px);box-shadow:0 0 42px rgba(31,163,177,.6);}
+.pay-btn:hover::before{opacity:1;}
+.pay-btn:active{transform:translateY(0);}
+.pay-btn-amount{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;opacity:.85;}
+
+.success-overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(4,7,13,.9);backdrop-filter:blur(24px);z-index:9999;opacity:0;pointer-events:none;transition:opacity .5s;}
+.success-overlay.show{opacity:1;pointer-events:auto;}
+.success-icon{width:86px;height:86px;border-radius:50%;background:rgba(31,163,177,.12);border:2px solid rgba(31,163,177,.5);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--aqua);box-shadow:0 0 40px rgba(31,163,177,.3);animation:popIn .6s cubic-bezier(.23,1,.32,1) both;}
+@keyframes popIn{from{transform:scale(.4);opacity:0;}70%{transform:scale(1.12);}to{transform:scale(1);opacity:1;}}
+.success-title{font-family:'Big Shoulders Display',sans-serif;font-size:40px;font-weight:900;letter-spacing:-1px;color:#fff;}
+.success-sub{font-size:14px;color:rgba(255,255,255,.4);}
+.success-line{width:52px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--aqua),var(--gold));}
+.success-actions{display:flex;gap:12px;margin-top:8px;}
+.s-btn{padding:13px 28px;border-radius:50px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.3s;letter-spacing:.5px;text-decoration:none;display:flex;align-items:center;gap:8px;}
+.s-btn-primary{background:linear-gradient(135deg,var(--aqua),#0f6f79);color:#fff;border:none;box-shadow:0 0 20px rgba(31,163,177,.3);}
+.s-btn-primary:hover{box-shadow:0 0 32px rgba(31,163,177,.55);transform:translateY(-2px);}
+.s-btn-secondary{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);border:1.5px solid rgba(255,255,255,.15);}
+.s-btn-secondary:hover{background:rgba(255,255,255,.1);color:#fff;}
+
+@media(max-width:768px){
+  .navbar{padding:14px 20px;}.logo-img{height:22px;}
+  .main{padding:88px 16px 50px;}
+  .pay-wrap{grid-template-columns:1fr;max-width:480px;}
+  .pay-methods{flex-wrap:wrap;}
+  .method-tab{min-width:calc(50% - 5px);}
+  .bank-grid{grid-template-columns:1fr;}
+  .upi-apps{flex-direction:column;}
+  .success-actions{flex-direction:column;width:90%;max-width:320px;}
+  .s-btn{justify-content:center;}
+}
+@media(max-width:400px){
+  .glass{padding:24px 18px;}.order-title{font-size:28px;}.pay-btn{font-size:13px;}
+}
+</style>
+</head>
+
+<body>
+
+<video autoplay muted loop class="bg-video">
+  <source src="login-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-overlay"></div>
+
+<nav class="navbar">
+  <img src="logo.png" class="logo-img" alt="Tap to Trip">
+  <div class="nav-secure">
+    <i class="fa-solid fa-lock"></i> 256-bit SSL secured payment
+  </div>
+</nav>
+
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+  <div class="success-line"></div>
+  <div class="success-title">Payment Successful!</div>
+  <div class="success-sub">Your booking is now confirmed. Check your email for details.</div>
+  <div class="success-actions">
+    <a href="confirmation.html" class="s-btn s-btn-primary">
+      <i class="fa-solid fa-receipt"></i> View Confirmation
+    </a>
+    <a href="index.html" class="s-btn s-btn-secondary">
+      <i class="fa-solid fa-house"></i> Back to Home
+    </a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="pay-wrap">
+
+    <!-- LEFT — ORDER SUMMARY -->
+    <div class="glass">
+      <span class="order-eyebrow">Order summary</span>
+      <div class="order-title">Your <span>Trip</span></div>
+      <div class="order-sub">Review your booking before payment</div>
+
+      <div class="dest-card">
+        <img class="dest-card-img" id="destImg" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=900&auto=format&fit=crop" alt="Destination">
+        <div class="dest-card-overlay">
+          <div class="dest-card-name" id="summaryDest">Dubai</div>
+          <div class="dest-card-badge" id="summaryBadge">Confirmed</div>
+        </div>
+      </div>
+
+      <div class="trip-rows">
+        <div class="trip-row">
+          <span class="trip-row-label"><i class="fa-solid fa-users"></i>Travel type</span>
+          <span class="trip-row-value" id="summaryType">—</span>
+        </div>
+        <div class="trip-row">
+          <span class="trip-row-label"><i class="fa-solid fa-moon"></i>Duration</span>
+          <span class="trip-row-value" id="summaryDur">—</span>
+        </div>
+        <div class="trip-row">
+          <span class="trip-row-label"><i class="fa-solid fa-plane-departure"></i>Departure</span>
+          <span class="trip-row-value" id="summaryCityDate">—</span>
+        </div>
+        <div class="trip-row">
+          <span class="trip-row-label"><i class="fa-solid fa-user"></i>Traveller</span>
+          <span class="trip-row-value" id="summaryName">—</span>
+        </div>
+      </div>
+
+      <div class="price-box">
+        <div>
+          <div class="price-label">Total amount</div>
+          <div class="price-per" id="priceBreakdown">Inclusive of all taxes</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="price-amount" id="displayAmount"><small>₹</small>—</div>
+        </div>
+      </div>
+
+      <div class="trust-row">
+        <div class="trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure payment</div>
+        <div class="trust-badge"><i class="fa-solid fa-rotate-left"></i> Free cancellation</div>
+        <div class="trust-badge"><i class="fa-solid fa-headset"></i> 24×7 support</div>
+      </div>
+    </div>
+
+    <!-- RIGHT — PAYMENT METHODS -->
+    <div class="glass">
+      <span class="order-eyebrow">Payment method</span>
+      <div class="order-title" style="margin-bottom:20px;">Secure <span>Checkout</span></div>
+
+      <div class="pay-methods">
+        <div class="method-tab active" onclick="switchTab('upi')">
+          <i class="fa-solid fa-qrcode"></i>UPI / QR
+        </div>
+        <div class="method-tab" onclick="switchTab('card')">
+          <i class="fa-regular fa-credit-card"></i>Card
+        </div>
+        <div class="method-tab" onclick="switchTab('netbank')">
+          <i class="fa-solid fa-building-columns"></i>Net Banking
+        </div>
+      </div>
+
+      <!-- UPI / QR PANEL -->
+      <div class="pay-panel active" id="panel-upi">
+        <div class="qr-section">
+          <div class="qr-label">Scan with any UPI app to pay</div>
+          <div class="qr-frame">
+            <div class="qr-corner tl"></div>
+            <div class="qr-corner tr"></div>
+            <div class="qr-corner bl"></div>
+            <div class="qr-corner br"></div>
+            <div id="qrcode"></div>
+          </div>
+          <div class="qr-scan-hint">
+            <i class="fa-solid fa-circle-info"></i>
+            Open any UPI app · Scan QR · Pay instantly
+          </div>
+          <div class="upi-chip">
+            <i class="fa-solid fa-at" style="color:var(--aqua);font-size:13px;"></i>
+            <span id="upiIdText">yourname@gpay</span>
+            <button class="upi-copy" onclick="copyUPI()" title="Copy UPI ID">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="or-divider">
+          <div class="or-divider-line"></div>
+          <div class="or-divider-text">or pay with app</div>
+          <div class="or-divider-line"></div>
+        </div>
+
+        <div class="upi-apps">
+          <a class="upi-app-btn" id="gpayLink" href="#" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png" alt="Google Pay" style="height:22px;width:auto;object-fit:contain;border-radius:0;background:transparent;">
+            Google Pay
+          </a>
+          <a class="upi-app-btn" id="phonepeLink" href="#" target="_blank">
+            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/phonepe-icon.png" alt="PhonePe" style="height:22px;width:auto;object-fit:contain;border-radius:0;">
+            PhonePe
+          </a>
+          <a class="upi-app-btn" id="paytmLink" href="#" target="_blank">
+            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/paytm-icon.png" alt="Paytm" style="height:35px;width:auto;object-fit:contain;border-radius:0;filter:brightness(0) invert(1);">
+            Paytm
+          </a>
+          <a class="upi-app-btn" id="bhimLink" href="https://www.bhimupi.org.in" target="_blank">
+            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/bhim-app-icon.png" alt="BHIM" style="height:30px;width:auto;object-fit:contain;border-radius:0;">
+            BHIM UPI
+          </a>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,0.05);">
+          <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/upi-icon.png" alt="UPI" style="height:32px;width:auto;opacity:.55;filter:brightness(0) invert(1);">
+          <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/rupay-logo-icon.svg" alt="RuPay" style="height:18px;width:auto;opacity:.45;filter:brightness(0) invert(1);">
+          <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/visa-icon.png" alt="Visa" style="height:28px;width:auto;opacity:.45;filter:brightness(0) invert(1);">
+          <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/master-card-icon.svg" alt="Mastercard" style="height:18px;width:auto;opacity:.45;filter:brightness(0) invert(1);">
+        </div>
+
+        <button class="pay-btn" onclick="confirmPayment()">
+          <i class="fa-solid fa-check-circle"></i>
+          I have paid &nbsp;·&nbsp;
+          <span class="pay-btn-amount" id="btnAmount">₹65,000</span>
+        </button>
+      </div>
+
+      <!-- CARD PANEL -->
+      <div class="pay-panel" id="panel-card">
+        <div class="card-icons">
+          <div class="card-icon"><img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/visa-icon.png" alt="Visa" style="height:29px;width:auto;filter:brightness(0) invert(1);opacity:.7;"></div>
+          <div class="card-icon"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" style="height:22px;width:auto;opacity:.7;"></div>
+          <div class="card-icon"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/RuPay.svg/200px-RuPay.svg.png" alt="RuPay" style="height:10px;width:auto;filter:brightness(0) invert(1);opacity:.7;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cardholder name</label>
+          <input class="form-input" type="text" placeholder="Name on card">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Card number</label>
+          <input class="form-input" type="text" placeholder="0000  0000  0000  0000" maxlength="19" id="cardNum">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Expiry</label>
+            <input class="form-input" type="text" placeholder="MM / YY" maxlength="7" id="cardExp">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVV</label>
+            <input class="form-input" type="password" placeholder="•••" maxlength="4">
+          </div>
+        </div>
+        <button class="pay-btn" onclick="confirmPayment()">
+          <i class="fa-solid fa-lock"></i>
+          Pay Securely &nbsp;·&nbsp;
+          <span class="pay-btn-amount" id="btnAmountCard">₹65,000</span>
+        </button>
+      </div>
+
+      <!-- NET BANKING PANEL -->
+      <div class="pay-panel" id="panel-netbank">
+        <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:12px;">Select your bank</div>
+        <div class="bank-grid">
+          <a class="bank-item" href="https://www.onlinesbi.sbi/sbijava/index.html" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/SBI-logo.svg/200px-SBI-logo.svg.png" alt="SBI" class="bank-logo-img">
+            <div><div class="bank-name">State Bank of India</div><div class="bank-sub">SBI Net Banking</div></div>
+            <i class="fa-solid fa-arrow-up-right-from-square bank-arrow"></i>
+          </a>
+          <a class="bank-item" href="https://netbanking.hdfcbank.com/netbanking/" target="_blank">
+            <img src="https://banner2.cleanpng.com/lnd/20241224/fl/c98fd7fa29ba4f6ff816d90311ab67.webp" alt="HDFC" class="bank-logo-img">
+            <div><div class="bank-name">HDFC Bank</div><div class="bank-sub">NetBanking</div></div>
+            <i class="fa-solid fa-arrow-up-right-from-square bank-arrow"></i>
+          </a>
+          <a class="bank-item" href="https://infinity.icicibank.com/corp/AuthenticationController" target="_blank">
+            <img src="https://banner2.cleanpng.com/20181117/ssc/kisspng-icici-bank-canada-mobile-banking-private-sector-ba-app-insights-icici-bank-uk-mobile-banking-appto-1713919972285.webp" alt="ICICI" class="bank-logo-img">
+            <div><div class="bank-name">ICICI Bank</div><div class="bank-sub">iMobile / Net Banking</div></div>
+            <i class="fa-solid fa-arrow-up-right-from-square bank-arrow"></i>
+          </a>
+          <a class="bank-item" href="https://retail.axisbank.co.in/wps/portal/rBanking/!ut/p/a1/04_Sj9CPykssy0xPLMnMz0vMAfGjzOKN_A08TYqMjA0sAo2dzYqMvUIMjY2MXU31w8EKDHAARwNC-r1SCj3cXN0D9aOMXF0cw91DPY3dA4KNg4w8XfxMLNwNjQ0NXQ09zY2M9L30o_Tzi1ILcisBeAv6iQ!!/dl5/d5/L2dBISEvZ0FBIS9nQSEh/" target="_blank">
+            <img src="https://icon2.cleanpng.com/20180802/trv/9f73b516e85570fae2b3d2af28c1dcc2.webp" alt="Axis" class="bank-logo-img">
+            <div><div class="bank-name">Axis Bank</div><div class="bank-sub">Net Banking</div></div>
+            <i class="fa-solid fa-arrow-up-right-from-square bank-arrow"></i>
+          </a>
+          <a class="bank-item" href="https://www.bobfinancial.com/internet-banking.jsp" target="_blank">
+            <img src="https://icon2.cleanpng.com/lnd/20250107/rl/37ea6827967109da7ff9c36ffcbf01.webp" alt="BOB" class="bank-logo-img">
+            <div><div class="bank-name">Bank of Baroda</div><div class="bank-sub">Baroda Connect</div></div>
+            <i class="fa-solid fa-arrow-up-right-from-square bank-arrow"></i>
+          </a>
+          <a class="bank-item" href="https://retail.pnbnet.in/" target="_blank">
+            <img src="https://icon2.cleanpng.com/20180401/cbw/avcckk4t8.webp" alt="PNB" class="bank-logo-img">
+            <div><div class="bank-name">Punjab National</div><div class="bank-sub">PNB NetBanking</div></div>
+            <i class="fa-solid fa-arrow-up-right-from-square bank-arrow"></i>
+          </a>
+          <a class="bank-item" href="https://ibanking.indusind.com/IndusNet/LoginPage.action" target="_blank">
+            <img src="https://icon2.cleanpng.com/20180727/bi/e6f87583191ffce7eed820e4c3997cd6.webp" alt="IndusInd" class="bank-logo-img">
+            <div><div class="bank-name">IndusInd Bank</div><div class="bank-sub">IndusDirect</div></div>
+            <i class="fa-solid fa-arrow-up-right-from-square bank-arrow"></i>
+          </a>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.22);text-align:center;margin-top:6px;margin-bottom:2px;">
+          <i class="fa-solid fa-circle-info" style="color:var(--aqua);font-size:10px;"></i>
+          &nbsp;You will be redirected to your bank's official website
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const YOUR_UPI_ID = "yourname@gpay"; // ← REPLACE THIS
+
+const destImages = {
+  "Dubai":       "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=900&auto=format&fit=crop",
+  "Paris":       "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=900&auto=format&fit=crop",
+  "Bali":        "https://images.unsplash.com/photo-1604430289272-0851a606105d?q=80&w=900&auto=format&fit=crop",
+  "Switzerland": "https://images.unsplash.com/photo-1528493366314-e317cd98dd52?q=80&w=900&auto=format&fit=crop",
+  "Tokyo":       "https://plus.unsplash.com/premium_photo-1666700698920-d2d2bba589f8?q=80&w=900&auto=format&fit=crop",
+  "New York":    "https://images.unsplash.com/photo-1518235506717-e1ed3306a89b?q=80&w=900&auto=format&fit=crop",
+  "Norway":      "https://images.unsplash.com/photo-1544009520-e2ea9189f15e?q=80&w=900&auto=format&fit=crop",
+  "Iceland":     "https://images.unsplash.com/photo-1531168556467-80aace0d0144?q=80&w=900&auto=format&fit=crop",
+  "Maldives":    "https://images.unsplash.com/photo-1611561937871-2e76de16d872?q=80&w=900&auto=format&fit=crop",
+  "Santorini":   "https://plus.unsplash.com/premium_photo-1697729900945-598459160f7b?q=80&w=900&auto=format&fit=crop",
+  "Scotland":    "https://images.unsplash.com/photo-1571936804022-90d128047136?q=80&w=900&auto=format&fit=crop",
+  "Thailand":    "https://images.unsplash.com/photo-1544467187-784a3534a696?q=80&w=900&auto=format&fit=crop",
+  "Nepal":       "https://images.unsplash.com/photo-1599751229070-854ae5c90869?q=80&w=900&auto=format&fit=crop",
+  "Mauritius":   "https://images.unsplash.com/photo-1581859814481-bfd944e3122f?q=80&w=900&auto=format&fit=crop",
+  "Seychelles":  "https://images.unsplash.com/photo-1595773382291-06d1b6cbc43b?q=80&w=900&auto=format&fit=crop",
+  "New Zealand": "https://images.unsplash.com/photo-1597655601841-214a4cfe8b2c?q=80&w=900&auto=format&fit=crop",
+};
+
+function formatDate(raw){
+  if(!raw||raw==="—") return "—";
+  const p=raw.split("-");
+  if(p.length<3) return raw;
+  return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const place    = localStorage.getItem("selectedPlace")  || "Dubai";
+  const travType = localStorage.getItem("travellerType")  || "—";
+  const city     = localStorage.getItem("departureCity")  || "—";
+  const code     = localStorage.getItem("departureCode")  || "";
+  const dateRaw  = localStorage.getItem("departureDate")  || "—";
+  const name     = localStorage.getItem("bookingName")    || "Traveller";
+
+  TapToTrip.renderPaymentSummary();
+
+  const days  = TapToTrip.getDays();
+  const count = TapToTrip.getTravellerCount();
+  const rate  = TapToTrip.getRatePerDay(place, days);
+  document.getElementById("priceBreakdown").textContent =
+    `₹${TapToTrip.formatINR(rate)}/day × ${days} day${days>1?'s':''} × ${count} traveller${count>1?'s':''}`;
+
+  document.getElementById("summaryDest").textContent     = place;
+  document.getElementById("summaryBadge").textContent    = "Confirmed";
+  document.getElementById("summaryType").textContent     = travType;
+  document.getElementById("summaryDur").textContent      = days + (days > 1 ? " Days" : " Day");
+  document.getElementById("summaryCityDate").textContent = (code?city+" ("+code+")":city)+"  ·  "+formatDate(dateRaw);
+  document.getElementById("summaryName").textContent     = name;
+  if(destImages[place]) document.getElementById("destImg").src = destImages[place];
+
+  document.getElementById("upiIdText").textContent = YOUR_UPI_ID;
+
+  const total  = TapToTrip.getPrice(place, days, count);
+  const upiURL = `upi://pay?pa=${encodeURIComponent(YOUR_UPI_ID)}&pn=TapToTrip&am=${total}&cu=INR&tn=Booking+${encodeURIComponent(place)}`;
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: upiURL,
+    width: 160, height: 160,
+    colorDark: "#0b1220", colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H,
+  });
+
+  document.getElementById("gpayLink").href    = upiURL.replace("upi://","gpay://upi/");
+  document.getElementById("phonepeLink").href = upiURL.replace("upi://","phonepe://");
+  document.getElementById("paytmLink").href   = upiURL.replace("upi://","paytmmp://");
+});
+
+function switchTab(tab){
+  document.querySelectorAll(".method-tab").forEach((t,i)=>{
+    t.classList.toggle("active", ["upi","card","netbank"][i]===tab);
+  });
+  document.querySelectorAll(".pay-panel").forEach(p=>p.classList.remove("active"));
+  document.getElementById("panel-"+tab).classList.add("active");
+}
+
+function copyUPI(){
+  navigator.clipboard.writeText(YOUR_UPI_ID).then(()=>{
+    const btn = document.querySelector(".upi-copy");
+    btn.innerHTML='<i class="fa-solid fa-check"></i>';
+    btn.style.color="#fff";
+    setTimeout(()=>{ btn.innerHTML='<i class="fa-regular fa-copy"></i>'; btn.style.color=""; },2000);
+  });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  const cn=document.getElementById("cardNum");
+  if(cn){
+    cn.addEventListener("input",function(){
+      let v=this.value.replace(/\D/g,"").substring(0,16);
+      this.value=v.replace(/(.{4})/g,"$1  ").trim();
+    });
+  }
+  const ce=document.getElementById("cardExp");
+  if(ce){
+    ce.addEventListener("input",function(){
+      let v=this.value.replace(/\D/g,"").substring(0,4);
+      if(v.length>2) v=v.substring(0,2)+" / "+v.substring(2);
+      this.value=v;
+    });
+  }
+});
+
+function confirmPayment(){
+  document.getElementById("successOverlay").classList.add("show");
+  setTimeout(()=>{ window.location.href="confirmation.html"; },4000);
+}
+</script>
+</body>
+</html>

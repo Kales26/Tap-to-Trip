@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Destination Doors — Tap to Trip</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Prata&family=Comfortaa&family=Orbitron&family=Unbounded&family=Cinzel+Decorative&family=Bebas+Neue&family=Marcellus&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=ZCOOL+XiaoWei&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Orbitron:wght@700&family=Cinzel+Decorative:wght@700&family=Comfortaa:wght@700&family=Unbounded:wght@700&family=Great+Vibes&family=Abril+Fatface&family=Exo+2:wght@800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Prata&family=Libre+Baskerville:wght@700&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --aqua:#1FA3B1; --aqua-light:#38c5d5; --aqua-glow:rgba(31,163,177,.4);
+  --gold:#C9A84C; --gold-light:#e8c97e;
+  --cream:#F8F0E3; --dark:#04070D;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+html,body{overflow-x:hidden;width:100%;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--aqua),var(--gold));border-radius:10px;}
+
+body{background:var(--dark);color:white;overflow-x:hidden;}
+
+body::after{
+  content:"";position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:99990;opacity:.35;
+}
+
+/* ── NAVBAR ── */
+.navbar{
+  position:fixed;width:100%;top:0;left:0;z-index:1000;
+  padding:18px 60px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(4,7,13,.18);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 1px 0 rgba(255,255,255,.05);
+  transition:.4s ease;
+}
+.navbar.scrolled{
+  background:rgba(4,7,13,.82);
+  backdrop-filter:blur(24px);
+  box-shadow:0 8px 40px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.04);
+  padding:14px 60px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.logo-img{
+  height:26px;width:auto;
+  filter:drop-shadow(0 0 10px rgba(31,163,177,.5));
+  transition:.3s;
+}
+.logo-img:hover{filter:drop-shadow(0 0 20px rgba(31,163,177,.9));transform:scale(1.04);}
+
+/* ── PROGRESS STEPS ── */
+.trip-steps{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;gap:0;align-items:center;
+  white-space:nowrap;
+}
+.step{
+  font-family:'Outfit',sans-serif;
+  font-size:12px;font-weight:500;
+  color:rgba(255,255,255,.4);
+  letter-spacing:.5px;
+  cursor:pointer;
+  transition:.3s;
+  position:relative;
+  padding:6px 0;
+  display:flex;align-items:center;gap:8px;
+}
+.step-num{
+  width:22px;height:22px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;
+  transition:.3s;
+  flex-shrink:0;
+}
+.step.active .step-num{
+  background:var(--aqua);
+  border-color:var(--aqua);
+  box-shadow:0 0 14px rgba(31,163,177,.55);
+  color:#fff;
+}
+.step.active{color:#fff;font-weight:600;}
+.step:hover:not(.active){ color:rgba(255,255,255,.7); }
+.step-connector{
+  width:32px;height:1px;
+  background:rgba(255,255,255,.12);
+  margin:0 4px;
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.step-connector::after{
+  content:"";position:absolute;left:0;top:0;
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--aqua),var(--gold));
+  transition:.5s ease;
+}
+.step-connector.done::after{ width:100%; }
+
+/* ── MAIN SECTION ── */
+.door-section{
+  position:relative;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.door-video{
+  position:absolute;width:100%;height:100%;
+  object-fit:cover;z-index:-2;
+}
+.door-overlay{
+  position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(135deg,rgba(4,7,13,.75) 0%,rgba(4,7,13,.55) 50%,rgba(4,7,13,.72) 100%);
+}
+
+/* ── GLASS CARD ── */
+.door-glass{
+  width:95%;max-width:1460px;
+  padding:44px 48px 48px;
+  margin-top:80px;
+  border-radius:28px;
+  background:rgba(255,255,255,.03);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:
+    0 0 0 0.5px rgba(255,255,255,.05) inset,
+    0 30px 80px rgba(0,0,0,.65),
+    0 0 60px rgba(31,163,177,.04);
+  animation:glassFloat 8s ease-in-out infinite;
+  position:relative;
+}
+@keyframes glassFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-5px);}
+}
+.door-glass::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:30%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  border-radius:2px;
+}
+
+/* ── SECTION HEADING ── */
+.glass-header{text-align:center;margin-bottom:36px;}
+.glass-eyebrow{
+  font-family:'Outfit',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:5px;
+  text-transform:uppercase;color:var(--gold-light);opacity:.75;
+  margin-bottom:10px;display:block;
+}
+.door-glass h2{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-size:46px;font-weight:900;
+  letter-spacing:-1px;line-height:.95;
+  color:#fff;
+}
+.door-glass h2 span{color:var(--aqua);font-family:'Big Shoulders Display',sans-serif;}
+.glass-header::after{
+  content:"";display:block;
+  width:56px;height:2px;
+  background:linear-gradient(90deg,var(--aqua),var(--gold));
+  border-radius:2px;margin:14px auto 0;
+}
+
+/* ── SLIDER ── */
+.slider-wrapper{position:relative;}
+.door-grid{
+  display:flex;
+  gap:20px;
+  overflow-x:auto;
+  overflow-y:visible;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+  scroll-snap-type:x mandatory;
+  padding:24px 12px 32px;
+}
+.door-grid::-webkit-scrollbar{display:none;}
+
+/* ── CARDS ── */
+.door-card{
+  width:230px;height:320px;
+  scroll-snap-align:start;
+  border-radius:120px 120px 20px 20px;
+  overflow:hidden;
+  position:relative;
+  cursor:pointer;
+  flex-shrink:0;
+  will-change:transform;
+  transition:transform .5s cubic-bezier(.25,.46,.45,.94), box-shadow .5s ease;
+  box-shadow:0 16px 40px rgba(0,0,0,.6);
+}
+
+/* gold ring on hover */
+.door-card::before{
+  content:"";position:absolute;inset:0;
+  border-radius:120px 120px 20px 20px;
+  border:1px solid rgba(201,168,76,0);
+  z-index:3;pointer-events:none;
+  transition:border-color .5s ease;
+}
+.door-card:hover::before{border-color:rgba(201,168,76,.35);}
+
+.door-card img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .7s cubic-bezier(.25,.46,.45,.94), filter .5s ease;
+}
+.door-card:hover img{
+  transform:scale(1.07);
+  filter:brightness(.72);
+}
+
+/* permanent bottom gradient */
+.door-card::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(4,7,13,.88) 0%,rgba(4,7,13,.2) 50%,transparent 100%);
+  z-index:1;
+  transition:opacity .5s ease;
+}
+
+.door-card:hover{
+  transform:scale(1.07) translateY(-7px);
+  box-shadow:0 28px 64px rgba(0,0,0,.7), 0 0 0 1px rgba(201,168,76,.15);
+  z-index:10;
+}
+
+/* ── PREMIUM DARK SCRIM (hover only) ── */
+.card-scrim{
+  position:absolute;inset:0;
+  border-radius:120px 120px 20px 20px;
+  background:rgba(4,7,13,.52);
+  backdrop-filter:blur(1.5px);
+  -webkit-backdrop-filter:blur(1.5px);
+  z-index:2;
+  opacity:0;
+  transition:opacity .45s ease;
+  pointer-events:none;
+}
+.door-card:hover .card-scrim{ opacity:1; }
+
+/* ── CARD TEXT — always visible, slides up slightly on hover ── */
+.card-text{
+  position:absolute;bottom:22px;left:0;right:0;
+  text-align:center;z-index:4;
+  padding:0 14px;
+  transition:transform .45s cubic-bezier(.25,.46,.45,.94), opacity .35s ease;
+}
+.door-card:hover .card-text{
+  transform:translateY(-88px);
+  opacity:0;
+}
+
+.sub{
+  font-family:'Outfit',sans-serif;
+  font-size:9px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold-light);opacity:0;
+  transform:translateY(6px);
+  transition:.35s ease;
+  margin-bottom:5px;display:block;
+}
+.door-card:hover .sub{opacity:.8;transform:translateY(0);}
+
+.name{
+  font-size:24px;font-weight:700;
+  text-shadow:0 4px 18px rgba(0,0,0,.85);
+}
+
+/* ── CENTERED PREMIUM BUTTON PANEL ── */
+.card-hover-overlay{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:11px;
+  padding:0 22px;
+  opacity:0;
+  transform:translateY(10px);
+  transition: opacity .42s ease, transform .42s cubic-bezier(.25,.46,.45,.94);
+  pointer-events:none;
+}
+.door-card:hover .card-hover-overlay{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+  transition-delay:.06s;
+}
+
+/* destination name inside panel */
+.hover-name{
+  font-size:20px;font-weight:700;
+  text-align:center;
+  text-shadow:0 2px 12px rgba(0,0,0,.9);
+  margin-bottom:4px;
+  color:#fff;
+  letter-spacing:.5px;
+}
+
+/* thin gold divider */
+.hover-rule{
+  width:28px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin-bottom:6px;
+  opacity:.7;
+}
+
+/* ── PRIMARY: Explore Destination ── */
+.btn-explore{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;
+  padding:9px 10px;
+  border-radius:4px;
+  border:1px solid rgba(201,168,76,.55);
+  background:rgba(201,168,76,.1);
+  color:var(--gold-light);
+  font-family:'Outfit',sans-serif;
+  font-size:10px;font-weight:700;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .28s ease, border-color .28s ease, color .28s ease, box-shadow .28s ease;
+  backdrop-filter:blur(8px);
+  white-space:normal;
+  text-align:center;
+  line-height:1.3;
+  word-break:break-word;
+  overflow:hidden;
+}
+.btn-explore:hover{
+  background:rgba(201,168,76,.22);
+  border-color:rgba(201,168,76,.9);
+  color:#fff;
+  box-shadow:0 0 18px rgba(201,168,76,.2);
+}
+.btn-explore i{ font-size:10px; opacity:.85; flex-shrink:0; }
+
+/* ── SECONDARY: Plan My Trip ── */
+.btn-plan{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;
+  padding:8px 10px;
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,.15);
+  background:transparent;
+  color:rgba(255,255,255,.6);
+  font-family:'Outfit',sans-serif;
+  font-size:10px;font-weight:500;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  text-decoration:none;
+  transition:border-color .25s ease, color .25s ease, background .25s ease;
+  white-space:normal;
+  text-align:center;
+  line-height:1.3;
+}
+.btn-plan:hover{
+  border-color:rgba(255,255,255,.4);
+  color:#fff;
+  background:rgba(255,255,255,.06);
+}
+.btn-plan i{ font-size:9px; opacity:.7; flex-shrink:0; }
+
+/* ── ARROW BUTTONS ── */
+.arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:42px;height:42px;
+  border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.2);
+  background:rgba(4,7,13,.6);
+  color:rgba(255,255,255,.8);
+  font-size:14px;
+  cursor:pointer;
+  backdrop-filter:blur(10px);
+  z-index:50;
+  transition:.3s;
+  display:flex;align-items:center;justify-content:center;
+}
+.arrow:hover{
+  background:var(--aqua);
+  border-color:var(--aqua);
+  color:#fff;
+  box-shadow:0 0 22px rgba(31,163,177,.5);
+  transform:translateY(-50%) scale(1.08);
+}
+.arrow.left{left:6px;display:none;}
+.arrow.right{right:6px;}
+
+/* ── DESTINATION FONT PERSONALITIES ── */
+.paris     { font-family:'Playfair Display', serif; letter-spacing:1px; }
+.swiss     { font-family:'Unbounded', sans-serif; letter-spacing:2px; font-size:18px; }
+.norway    { font-family:'Cinzel Decorative', serif; letter-spacing:2px; font-size:17px; }
+.iceland   { font-family:'Orbitron', sans-serif; letter-spacing:2px; font-size:16px; }
+.bali      { font-family:'Prata', serif; letter-spacing:1px; }
+.maldives  { font-family:'Great Vibes', cursive; font-size:30px; }
+.mauritius { font-family:'Exo 2', sans-serif; letter-spacing:2px; }
+.seychelles{ font-family:'Comfortaa', sans-serif; letter-spacing:3px; font-size:18px; }
+.nz        { font-family:'Bebas Neue', sans-serif; letter-spacing:3px; }
+.nepal     { font-family:'Marcellus', serif; letter-spacing:1px; }
+.thailand  { font-family:'Dancing Script', cursive; font-size:26px; }
+.santorini { font-family:'Abril Fatface', serif; letter-spacing:1px; }
+.dubai     { font-family:'Aref Ruqaa', serif; font-size:24px; letter-spacing:1px; font-weight:900; }
+.tokyo     { font-family:'ZCOOL XiaoWei', serif; letter-spacing:3px; font-weight:900; }
+.newyork   { font-family:'Bebas Neue', sans-serif; letter-spacing:3px; font-weight:800; }
+.scotland  { font-family:'Cinzel Decorative', serif; font-size:17px; }
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .navbar{
+    padding:10px 16px 8px;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    justify-content:flex-start;
+  }
+  .logo{ position:static;width:100%;display:flex;justify-content:center; }
+  .logo-img{height:20px;}
+  .menu-toggle{display:none;}
+  .trip-steps{
+    position:static;
+    transform:none;
+    width:100%;
+    display:flex;
+    overflow-x:auto;
+    overflow-y:visible;
+    gap:0;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:2px;
+  }
+  .trip-steps::-webkit-scrollbar{display:none;}
+  .step{font-size:10px; white-space:nowrap; flex-shrink:0;}
+  .step-num{width:17px;height:17px;font-size:8px;}
+  .step-connector{width:16px; flex-shrink:0;}
+  .door-glass{
+    padding:28px 20px 32px;
+    border-radius:20px;
+    margin-top:90px;
+  }
+  .door-glass h2{font-size:30px;}
+  .door-card{
+    width:170px;height:260px;
+    border-radius:90px 90px 16px 16px;
+  }
+  .card-scrim{ border-radius:90px 90px 16px 16px; }
+  .card-hover-overlay{ padding:0 14px; gap:8px; }
+  .hover-name{ font-size:16px; margin-bottom:2px; }
+  .hover-rule{ margin-bottom:4px; }
+  .btn-explore,.btn-plan{ font-size:9px; padding:7px 8px; letter-spacing:.8px; gap:4px; }
+  .btn-explore i{ font-size:9px; }
+  .name{font-size:18px;}
+  .arrow{width:34px;height:34px;font-size:12px;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar" id="navbar">
+  <div class="logo">
+    <img src="logo.png" class="logo-img">
+  </div>
+
+  <div class="trip-steps">
+    <span class="step active">
+      <span class="step-num">1</span>
+      Destination
+    </span>
+    <div class="step-connector"></div>
+    <span class="step">
+      <span class="step-num">2</span>
+      Travellers
+    </span>
+    <div class="step-connector"></div>
+    <span class="step">
+      <span class="step-num">3</span>
+      Duration
+    </span>
+    <div class="step-connector"></div>
+    <span class="step">
+      <span class="step-num">4</span>
+      Departure city
+    </span>
+    <div class="step-connector"></div>
+    <span class="step">
+      <span class="step-num">5</span>
+      Departure date
+    </span>
+  </div>
+
+  <div class="menu-toggle" id="menuToggle">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+</div>
+
+<!-- MAIN SECTION -->
+<section class="door-section">
+
+  <video autoplay muted loop class="door-video">
+    <source src="details-bg.mp4" type="video/mp4">
+  </video>
+
+  <div class="door-overlay"></div>
+
+  <div class="door-glass">
+
+    <div class="glass-header">
+      <span class="glass-eyebrow">Step 1 of 5</span>
+      <h2>Choose your <span>Destination</span></h2>
+    </div>
+
+    <div class="slider-wrapper">
+
+      <button class="arrow left" id="leftArrow" onclick="slideLeft()">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <button class="arrow right" id="rightArrow" onclick="slideRight()">
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+
+      <div class="door-grid" id="slider">
+
+        <!-- NORWAY -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1544009520-e2ea9189f15e?q=80&w=1032&auto=format&fit=crop">
+          <div class="card-text">
+            <span class="sub">Land of fjords</span>
+            <div class="name norway">Norway</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Norway</div>
+            <div class="hover-rule"></div>
+            <a href="norway.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Norway');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- NEW ZEALAND -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1597655601841-214a4cfe8b2c?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Adventure capital</span>
+            <div class="name nz">New Zealand</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">New Zealand</div>
+            <div class="hover-rule"></div>
+            <a href="newzealand.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('New Zealand');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- SANTORINI -->
+        <div class="door-card">
+          <img src="https://plus.unsplash.com/premium_photo-1697729900945-598459160f7b?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Blue dome paradise</span>
+            <div class="name santorini">Santorini</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Santorini</div>
+            <div class="hover-rule"></div>
+            <a href="santorini.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Santorini');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- SCOTLAND -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1571936804022-90d128047136?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Wild and vast</span>
+            <div class="name scotland">Scotland</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Scotland</div>
+            <div class="hover-rule"></div>
+            <a href="scotland.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Scotland');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- SWITZERLAND -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1528493366314-e317cd98dd52?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Alpine paradise</span>
+            <div class="name swiss">Switzerland</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Switzerland</div>
+            <div class="hover-rule"></div>
+            <a href="swiss.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Switzerland');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- ICELAND -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1531168556467-80aace0d0144?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Land of fire & ice</span>
+            <div class="name iceland">Iceland</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Iceland</div>
+            <div class="hover-rule"></div>
+            <a href="iceland.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Iceland');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- BALI -->
+        <div class="door-card">
+          <img src="https://plus.unsplash.com/premium_photo-1668883188861-39974ed9ad99?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Island of gods</span>
+            <div class="name bali">Bali</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Bali</div>
+            <div class="hover-rule"></div>
+            <a href="bali.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Bali');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- MALDIVES -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1611561937871-2e76de16d872?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Tropical escape</span>
+            <div class="name maldives">Maldives</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Maldives</div>
+            <div class="hover-rule"></div>
+            <a href="maldives.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Maldives');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- MAURITIUS -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1581859814481-bfd944e3122f?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Ocean jewel</span>
+            <div class="name mauritius">Mauritius</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Mauritius</div>
+            <div class="hover-rule"></div>
+            <a href="mauritius.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Mauritius');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- SEYCHELLES -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1595773382291-06d1b6cbc43b?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Emerald isles</span>
+            <div class="name seychelles">Seychelles</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Seychelles</div>
+            <div class="hover-rule"></div>
+            <a href="seychelles.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Seychelles');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- THAILAND -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1544467187-784a3534a696?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Land of smiles</span>
+            <div class="name thailand">Thailand</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Thailand</div>
+            <div class="hover-rule"></div>
+            <a href="thailand.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Thailand');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- NEPAL -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1599751229070-854ae5c90869?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Himalayan escape</span>
+            <div class="name nepal">Nepal</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Nepal</div>
+            <div class="hover-rule"></div>
+            <a href="nepal.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Nepal');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- DUBAI -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1634007626524-f47fa37810a7?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Desert luxury</span>
+            <div class="name dubai">Dubai</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Dubai</div>
+            <div class="hover-rule"></div>
+            <a href="dubai.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Dubai');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- NEW YORK -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/flagged/photo-1575597255483-55f2afb6f42c?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">City that never sleeps</span>
+            <div class="name newyork">New York</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">New York</div>
+            <div class="hover-rule"></div>
+            <a href="newyork.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('New York');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- TOKYO -->
+        <div class="door-card">
+          <img src="https://plus.unsplash.com/premium_photo-1666700698920-d2d2bba589f8?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">Neon traditions</span>
+            <div class="name tokyo">Tokyo</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Tokyo</div>
+            <div class="hover-rule"></div>
+            <a href="tokyo.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Tokyo');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+        <!-- PARIS -->
+        <div class="door-card">
+          <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=500&auto=format&fit=crop&q=60">
+          <div class="card-text">
+            <span class="sub">City of lights</span>
+            <div class="name paris">Paris</div>
+          </div>
+          <div class="card-scrim"></div>
+          <div class="card-hover-overlay">
+            <div class="hover-name">Paris</div>
+            <div class="hover-rule"></div>
+            <a href="paris.html" class="btn-explore" onclick="event.stopPropagation()">
+              <i class="fa-solid fa-earth-americas"></i>&nbsp; Explore Destination
+            </a>
+            <a href="#" class="btn-plan" onclick="event.stopPropagation();goTraveller('Paris');return false;">
+              Plan My Trip
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /door-grid -->
+    </div><!-- /slider-wrapper -->
+
+  </div><!-- /door-glass -->
+
+</section>
+
+<script>
+const slider     = document.getElementById('slider');
+const leftArrow  = document.getElementById('leftArrow');
+const rightArrow = document.getElementById('rightArrow');
+const scrollAmount = 250;
+
+function updateArrows(){
+  const maxScrollLeft = slider.scrollWidth - slider.clientWidth;
+  leftArrow.style.display  = slider.scrollLeft <= 10                  ? "none" : "flex";
+  rightArrow.style.display = slider.scrollLeft >= maxScrollLeft - 10  ? "none" : "flex";
+}
+
+function slideLeft(){  slider.scrollBy({left: -scrollAmount, behavior:"smooth"}); }
+function slideRight(){ slider.scrollBy({left:  scrollAmount, behavior:"smooth"}); }
+
+slider.addEventListener("scroll", updateArrows);
+updateArrows();
+
+function goTraveller(place){
+  localStorage.setItem("selectedPlace", place);
+  window.location.href = "travellers.html";
+}
+
+window.addEventListener("scroll", ()=>{
+  document.getElementById("navbar").classList.toggle("scrolled", window.scrollY > 40);
+});
+</script>
+
+</body>
+</html>

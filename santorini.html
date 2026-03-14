@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Santorini – Tap to Trip</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Forum&family=Cinzel:wght@700;900&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="pricing.js"></script>
+    <style>
+        :root {
+            --aqua: #1FA3B1;
+            --aqua-glow: rgba(31,163,177,0.35);
+            --bg-dark: #05080e;
+            --glass: rgba(255,255,255,0.06);
+            --glass-border: rgba(255,255,255,0.12);
+            --silk-white: #F1ECE2;
+            --gold: #c9a84c;
+            --gold-light: #e8c97a;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit',sans-serif; }
+        body { background:var(--bg-dark); color:white; overflow-x:hidden; scroll-behavior:smooth; }
+
+        #progress-bar {
+            position: fixed; top: 0; left: 0;
+            width: 0%; height: 3px;
+            background: linear-gradient(90deg, var(--aqua), #9be7f2, var(--aqua));
+            z-index: 9999; transition: width 0.1s linear;
+            box-shadow: 0 0 10px var(--aqua-glow);
+        }
+
+        .navbar {
+            position:fixed; width:100%; z-index:1000;
+            padding:18px 50px; display:flex; justify-content:space-between; align-items:center;
+            background:rgba(0,0,0,0.15); backdrop-filter:blur(4px);
+            box-shadow:0 6px 30px rgba(0,0,0,0.25);
+            transition: background 0.4s ease;
+        }
+        .navbar.scrolled { background: rgba(5,8,14,0.85); backdrop-filter: blur(20px); }
+        .logo-img { height:26px; }
+        .nav-links a { margin-left:28px; text-decoration:none; color:white; font-size:15px; transition:.3s; }
+        .nav-links a:hover, .nav-links a.active { color:var(--aqua); }
+
+        /* ── HERO ── */
+        .hero {
+            height:80vh; position:relative; overflow:hidden;
+            display:flex; align-items:center; justify-content:center; text-align:center;
+            flex-direction: column; gap: 16px;
+        }
+        .hero-bg {
+            position:absolute; inset:0;
+            background:url('https://images.unsplash.com/photo-1530841377377-3ff06c0ca713?w=2000&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNhbnRvcmluaXxlbnwwfDB8MHx8fDA%3D') center/cover no-repeat;
+            z-index:-1; transform:scale(1.05);
+            animation:slowZoom 10s ease-in-out infinite alternate;
+        }
+        @keyframes slowZoom {
+            0%  { transform:scale(1.05); }
+            100%{ transform:scale(1.18); }
+        }
+        .hero::after {
+            content:""; position:absolute; inset:0;
+            background:radial-gradient(circle, rgba(5,8,14,0.28), rgba(5,8,14,0.84));
+        }
+
+        /* Santorini — Forum: ancient Roman/Greek forum inscriptions, open & monumental */
+        .hero h1 {
+            font-family: 'Forum', serif;
+            font-size: clamp(58px, 7.5vw, 180px);
+            font-weight: 600;
+            font-style: normal;
+            letter-spacing: 14px;
+            text-transform: uppercase;
+            line-height: 1;
+            background: linear-gradient(to bottom,
+    #ffffff 0%,      /* pure white at top */
+    #cce4f4 25%,     /* soft sky blue */
+    #4d9dc4 55%,     /* mid Aegean blue */
+    #0068a4 82%,     /* your deep ocean blue */
+    rgba(0,104,164,0) 100%); /* fades into the dark bg */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative; z-index: 2;
+            animation: titleFadeUp 1.5s cubic-bezier(0.2,0,0.2,1) forwards;
+            filter: drop-shadow(0 14px 40px rgba(0,0,0,0.55));
+        }
+        @keyframes titleFadeUp {
+            0%  { opacity:0; transform:translateY(20px); filter:blur(10px); }
+            100%{ opacity:1; transform:translateY(0); filter:blur(0); }
+        }
+        .hero-meta {
+            position: relative; z-index: 2;
+            display: flex; gap: 30px; align-items: center;
+            animation: titleFadeUp 1.8s cubic-bezier(0.2,0,0.2,1) forwards; opacity: 0;
+        }
+        .hero-pill {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+            backdrop-filter: blur(12px); padding: 8px 18px; border-radius: 50px;
+            font-size: 13px; font-weight: 500; color: var(--silk-white); letter-spacing: 0.5px;
+        }
+        .hero-pill i { color: var(--aqua); font-size: 12px; }
+        .scroll-cue {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            opacity: 0.5; animation: cueFloat 2s ease-in-out infinite;
+        }
+        .scroll-cue span { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; }
+        .scroll-cue i { font-size: 14px; }
+        @keyframes cueFloat {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* ── STATS ── */
+        .stats-strip {
+            display: flex; justify-content: center; gap: 0;
+            padding: 0 60px; margin-top: -1px; position: relative; z-index: 9;
+        }
+        .stat-item {
+            flex: 1; max-width: 220px;
+            background: rgba(10,15,26,0.85); border: 1px solid var(--glass-border);
+            padding: 22px 30px; text-align: center; backdrop-filter: blur(20px); transition: 0.3s;
+        }
+        .stat-item:first-child { border-radius: 0 0 0 20px; }
+        .stat-item:last-child  { border-radius: 0 0 20px 0; }
+        .stat-item:not(:first-child) { border-left: none; }
+        .stat-item:hover { background: rgba(31,163,177,0.08); border-color: rgba(31,163,177,0.3); }
+        .stat-num { font-size: 26px; font-weight: 800; color: var(--aqua); line-height: 1; }
+        .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; margin-top: 4px; }
+
+        /* ── MAIN GRID ── */
+        .main-grid {
+            display:grid; grid-template-columns:1fr 340px;
+            gap:30px; padding:40px 60px 60px; position:relative; z-index:10;
+        }
+        .glass-card {
+            background:rgba(10,15,26,0.8); backdrop-filter:blur(30px);
+            border:1px solid var(--glass-border); border-radius:24px;
+            padding:40px; box-shadow:0 30px 60px rgba(0,0,0,0.4);
+            display:flex; flex-direction:column;
+        }
+
+        .itinerary-top { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:30px; }
+        .itinerary-top h2 { font-size:28px; font-weight:700; color:var(--silk-white); }
+        .itinerary-top h2 span { color:var(--aqua); }
+
+        .days-selector-wrap {
+            margin-bottom: 24px; padding: 18px 20px;
+            background: rgba(31,163,177,0.05); border: 1px solid rgba(31,163,177,0.15);
+            border-radius: 14px;
+        }
+        .days-selector-label {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px;
+            color: rgba(255,255,255,0.35); margin-bottom: 12px; display: flex;
+            align-items: center; gap: 8px;
+        }
+        .days-selector-label i { color: var(--aqua); }
+        .days-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+        .day-chip {
+            padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.5); cursor: pointer; transition: 0.25s; user-select: none;
+        }
+        .day-chip:hover { border-color: var(--aqua); color: var(--aqua); background: rgba(31,163,177,0.07); }
+        .day-chip.active {
+            background: var(--aqua); border-color: var(--aqua);
+            color: #05080e; box-shadow: 0 4px 16px rgba(31,163,177,0.35);
+        }
+        .days-note {
+            margin-top: 10px; font-size: 11px; color: rgba(255,255,255,0.3);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .days-note i { color: var(--gold); font-size: 10px; }
+
+        table { width:100%; border-spacing:10px; border-collapse:separate; }
+        th { color:var(--aqua); font-size:13px; text-transform:uppercase; letter-spacing:2px; padding:10px; text-align:left; }
+        .day-label-row td {
+            padding: 12px 10px 2px; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: rgba(255,255,255,0.25); font-weight: 600;
+        }
+        .drop {
+            background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);
+            border-radius:12px; min-height:80px; transition:0.3s; padding:5px;
+        }
+        .drop.drag-over { border-color: var(--aqua); background: rgba(31,163,177,0.06); }
+        .slot {
+            background:linear-gradient(145deg,#1a1f2b,#0d1117);
+            border:1px solid var(--glass-border); padding:12px; border-radius:10px;
+            cursor:grab; transition:0.3s; font-size:14px; font-weight:500;
+            position:relative; padding-right:30px;
+        }
+        .slot:hover { border-color:var(--aqua); transform:translateY(-3px); box-shadow:0 5px 15px rgba(31,163,177,0.2); }
+        .slot.dragging { opacity: 0.4; transform: scale(0.96); }
+        .slot.newly-added {
+            border-color: var(--aqua);
+            background: linear-gradient(145deg, rgba(31,163,177,0.15), #0d1117);
+            animation: slotPop 0.5s cubic-bezier(0.23,1,0.32,1);
+        }
+        @keyframes slotPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .remove-btn {
+            position:absolute; top:6px; right:8px; font-size:12px;
+            color:rgba(255,255,255,0.35); cursor:pointer; transition:0.2s;
+        }
+        .remove-btn:hover { color:#ff4d4d; }
+        .add-activity {
+            opacity:0.45; font-size:13px;
+            border:1px dashed rgba(255,255,255,0.25);
+            padding:10px; border-radius:8px; cursor:pointer; transition:0.3s; text-align:center;
+        }
+        .add-activity:hover { opacity:1; border:1px solid var(--aqua); background:rgba(31,163,177,0.08); }
+        .itinerary-footer {
+            margin-top:auto; padding-top:25px; border-top:1px solid rgba(255,255,255,0.05);
+            display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+            text-align:center; font-size:13px; color:rgba(255,255,255,0.35);
+        }
+        .itinerary-footer > div { display:flex; align-items:center; justify-content:center; gap:8px; }
+        .day-label-row.day-animated, .day-row.day-animated { animation: dayFadeIn 0.4s ease forwards; }
+        @keyframes dayFadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── SIDEBAR ── */
+        .side-panel { display:flex; flex-direction:column; gap:20px; }
+        .mini-card {
+            background:var(--glass); border:1px solid var(--glass-border);
+            border-radius:20px; padding:22px; backdrop-filter:blur(10px); transition: 0.3s;
+        }
+        .mini-card:hover { border-color: rgba(31,163,177,0.3); }
+        .mini-card h4 { font-size:13px; color:var(--aqua); margin-bottom:12px; text-transform:uppercase; letter-spacing:2px; }
+
+        input {
+            width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--glass-border);
+            padding:12px; border-radius:8px; color:white; outline:none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--aqua); box-shadow: 0 0 12px rgba(31,163,177,0.2); }
+
+        .pricing-card {
+            background: linear-gradient(135deg, rgba(31,163,177,0.12), rgba(10,15,26,0.9));
+            border: 1px solid rgba(31,163,177,0.3); position: relative; overflow: hidden;
+        }
+        .pricing-card::before {
+            content: ""; position: absolute; top:-40px; right:-40px;
+            width: 140px; height: 140px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(31,163,177,0.15), transparent 70%);
+            pointer-events: none;
+        }
+        .price-big { font-size:30px; font-weight:800; line-height:1; }
+        .price-sub { font-size:11px; opacity:0.45; font-weight:400; }
+        .price-includes {
+            display: flex; gap: 14px; margin: 14px 0 16px;
+            font-size: 11px; color: rgba(255,255,255,0.55);
+        }
+        .price-includes span { display:flex; align-items:center; gap:5px; }
+        .price-includes i { color: var(--aqua); }
+        .trust-badge {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; color: rgba(255,255,255,0.45);
+            margin-top: 10px; justify-content: center;
+        }
+        .trust-badge i { color: var(--aqua); font-size: 11px; }
+        .rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 13px; }
+        .stars { color: gold; font-size: 12px; letter-spacing: 1px; }
+        .rating-text { opacity: 0.5; font-size: 12px; }
+
+        .btn-main {
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #1a8f9c 0%, #1FA3B1 50%, #25b8c8 100%);
+            color: white; border: none; padding: 15px; border-radius: 12px;
+            font-weight: 700; cursor: pointer; width: 100%; font-size: 15px;
+            letter-spacing: 0.5px; transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
+            box-shadow: 0 4px 20px rgba(31,163,177,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .btn-main::before {
+            content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.18), transparent);
+            transition: 0.55s ease;
+        }
+        .btn-main::after {
+            content: ""; position: absolute; inset: 0; border-radius: 12px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
+            pointer-events: none;
+        }
+        .btn-main:hover::before { left: 100%; }
+        .btn-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px rgba(31,163,177,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-main:active { transform: translateY(-1px); }
+
+        .weather-big { font-size:32px; font-weight:800; line-height:1; }
+        .weather-desc { font-size:13px; opacity:0.5; margin-top:4px; }
+        .weather-row { display:flex; justify-content:space-between; align-items:flex-end; }
+        .weather-feels { font-size:12px; opacity:0.4; }
+
+        .month-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+        .month-pill { font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: 600; letter-spacing: 0.5px; }
+        .month-pill.peak    { background: rgba(31,163,177,0.25); color: #9be7f2; border: 1px solid rgba(31,163,177,0.4); }
+        .month-pill.off     { background: rgba(255,100,100,0.15); color: #ff9999; border: 1px solid rgba(255,100,100,0.3); }
+        .month-pill.shoulder{ background: rgba(255,200,80,0.12); color: #ffd87a; border: 1px solid rgba(255,200,80,0.3); }
+        .time-legend { display: flex; gap: 14px; margin-bottom: 10px; font-size: 11px; opacity: 0.6; }
+        .time-legend span { display:flex; align-items:center; gap:5px; }
+        .dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+        .dot.peak { background: #1FA3B1; }
+        .dot.shoulder { background: #ffd87a; }
+        .dot.off { background: #ff9999; }
+
+        .pack-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+        .pack-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; cursor: pointer; user-select: none;
+            padding: 7px 10px; border-radius: 8px; transition: 0.2s;
+        }
+        .pack-item:hover { background: rgba(255,255,255,0.04); }
+        .check-box {
+            width:16px; height:16px; border-radius:4px; border:1.5px solid rgba(255,255,255,0.25);
+            display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:0.2s;
+        }
+        .pack-item.checked .check-box { background:var(--aqua); border-color:var(--aqua); }
+        .pack-item.checked .check-box::after { content:"✓"; font-size:10px; font-weight:700; }
+        .pack-item.checked .pack-label { opacity:0.4; text-decoration:line-through; }
+
+        .aqua-divider {
+            width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--aqua), transparent);
+            opacity: 0.25;
+        }
+
+        /* ── HIGHLIGHTS ── */
+        .highlights-container { padding:50px 60px; }
+        .section-heading { display: flex; align-items: baseline; gap: 16px; margin-bottom: 30px; }
+        .section-heading h2 { font-size:28px; font-weight:800; }
+        .section-heading h2 span { color:var(--aqua); }
+        .section-heading .sub-label { font-size:12px; letter-spacing:3px; text-transform:uppercase; opacity:0.35; font-weight:400; }
+        .h-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+        .h-card {
+            height:380px; border-radius:20px; position:relative; overflow:hidden;
+            cursor:pointer; border:1px solid var(--glass-border);
+            transition:0.6s cubic-bezier(0.23,1,0.32,1);
+        }
+        .h-card img { width:100%; height:100%; object-fit:cover; transition:0.6s; }
+        .h-card .info {
+            position:absolute; inset:0;
+            background:linear-gradient(to top, rgba(5,8,14,0.9), transparent);
+            display:flex; flex-direction:column; justify-content:flex-end; padding:25px;
+            transform:translateY(40px); transition:0.4s;
+        }
+        .h-card:hover { transform:translateY(-10px) scale(1.02); border-color:var(--aqua); box-shadow:0 20px 40px rgba(0,0,0,0.6); }
+        .h-card:hover img { transform:scale(1.1); filter:grayscale(0.4); }
+        .h-card:hover .info { transform:translateY(0); }
+        .h-card h3 { font-size:20px; color:white; margin-bottom:5px; }
+        .h-card p  { font-size:12px; color:var(--aqua); opacity:0; transition:0.4s; }
+        .h-card:hover p { opacity:1; }
+        .h-badge {
+            position:absolute; top:14px; left:14px; z-index:2;
+            background:rgba(5,8,14,0.7); backdrop-filter:blur(10px);
+            border:1px solid rgba(31,163,177,0.35); border-radius:50px;
+            padding:5px 12px; font-size:10px; font-weight:700;
+            letter-spacing:2px; text-transform:uppercase; color:var(--aqua);
+        }
+
+        /* ── EXPLORE ── */
+        .explore-section {
+            padding: 60px 60px 80px; position: relative; overflow: hidden;
+        }
+        .explore-section::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(31,163,177,0.04), transparent);
+            pointer-events: none;
+        }
+        .explore-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+        .explore-header h2 {
+            font-size: 34px; font-weight: 800;
+            background: linear-gradient(135deg, var(--silk-white), rgba(255,255,255,0.5));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .explore-header h2 span { color: var(--aqua); -webkit-text-fill-color: var(--aqua); }
+        .explore-header p { font-size: 13px; opacity: 0.35; letter-spacing: 2px; text-transform: uppercase; }
+
+        .explore-track-wrap { position: relative; }
+        .explore-track-wrap::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 80px;
+            background: linear-gradient(to right, var(--bg-dark), transparent);
+            z-index: 2; pointer-events: none;
+        }
+        .explore-track-wrap::after {
+            content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 80px;
+            background: linear-gradient(to left, var(--bg-dark), transparent);
+            z-index: 2; pointer-events: none;
+        }
+        .explore-track {
+            display: flex; gap: 20px; overflow-x: auto;
+            padding: 20px 0 50px;
+            align-items: flex-start;
+            scroll-behavior: smooth; cursor: grab;
+            scrollbar-width: thin; scrollbar-color: rgba(31,163,177,0.3) transparent;
+        }
+        .explore-track::-webkit-scrollbar { height: 3px; }
+        .explore-track::-webkit-scrollbar-track { background: transparent; }
+        .explore-track::-webkit-scrollbar-thumb { background: rgba(31,163,177,0.3); border-radius: 2px; }
+        .explore-track.grabbed { cursor: grabbing; }
+
+        .explore-card {
+            flex-shrink: 0; width: 300px; border-radius: 22px; overflow: hidden;
+            position: relative; border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.5s cubic-bezier(0.23,1,0.32,1), box-shadow 0.5s, border-color 0.4s;
+            background: #0d1117;
+        }
+        .explore-card:nth-child(odd)  { margin-top: 0px; }
+        .explore-card:nth-child(even) { margin-top: 30px; }
+        .explore-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(31,163,177,0.25);
+            border-color: rgba(31,163,177,0.35);
+        }
+        .explore-card.added-to-itinerary { transform: none !important; border-color: rgba(31,163,177,0.5) !important; }
+        .explore-card.added-to-itinerary:hover { transform: translateY(-4px) scale(1.01) !important; }
+        .explore-card-overlay {
+            position: absolute; inset: 0; z-index: 10;
+            background: rgba(5,8,14,0.82); backdrop-filter: blur(6px);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 10px;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; border-radius: 22px;
+        }
+        .explore-card.added-to-itinerary .explore-card-overlay { opacity: 1; pointer-events: auto; }
+        .overlay-check {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--aqua), #25c8d9);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 24px rgba(31,163,177,0.5);
+            animation: checkPop 0.5s cubic-bezier(0.23,1,0.32,1) both;
+        }
+        @keyframes checkPop {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .overlay-check i { font-size: 22px; color: white; }
+        .overlay-text-main { font-size: 15px; font-weight: 700; color: var(--silk-white); text-align: center; padding: 0 20px; }
+        .overlay-text-sub  { font-size: 11px; color: rgba(255,255,255,0.45); text-align: center; padding: 0 20px; }
+        .overlay-undo-btn {
+            margin-top: 6px; padding: 8px 20px; border-radius: 8px;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: 0.25s;
+        }
+        .overlay-undo-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+
+        .explore-card-img {
+            width: 100%; height: 200px; object-fit: cover;
+            display: block; transition: transform 0.6s ease, filter 0.6s;
+        }
+        .explore-card:hover .explore-card-img { transform: scale(1.07); filter: brightness(0.85); }
+        .explore-card-body {
+            padding: 18px 20px 20px;
+            background: linear-gradient(to bottom, rgba(13,17,23,0.97), rgba(5,8,14,1));
+        }
+        .explore-card-tag {
+            display: inline-block; margin-bottom: 8px;
+            font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+            color: var(--aqua); background: rgba(31,163,177,0.1);
+            border: 1px solid rgba(31,163,177,0.25); padding: 3px 10px; border-radius: 50px;
+        }
+        .explore-card-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--silk-white); }
+        .explore-card-desc { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
+        .explore-card-meta { display: flex; gap: 14px; font-size: 11px; color: rgba(255,255,255,0.3); }
+        .explore-card-meta span { display: flex; align-items: center; gap: 5px; }
+        .explore-card-meta i { color: var(--aqua); font-size: 10px; }
+        .explore-card-rating {
+            position: absolute; top: 14px; right: 14px; z-index: 2;
+            background: rgba(5,8,14,0.75); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+            padding: 4px 10px; font-size: 12px; font-weight: 700;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .explore-card-rating i { color: #ffd87a; font-size: 10px; }
+        .explore-book-btn {
+            width: 100%; margin-top: 14px; padding: 11px; border-radius: 10px;
+            background: linear-gradient(135deg, rgba(31,163,177,0.15), rgba(31,163,177,0.08));
+            border: 1px solid rgba(31,163,177,0.3); color: var(--aqua);
+            font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.35s cubic-bezier(0.23,1,0.32,1);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .explore-book-btn:hover {
+            background: linear-gradient(135deg, rgba(31,163,177,0.35), rgba(31,163,177,0.2));
+            border-color: var(--aqua); transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(31,163,177,0.2);
+        }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: rgba(10,15,26,0.95); border: 1px solid rgba(31,163,177,0.4);
+            color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600;
+            z-index: 9999; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s; backdrop-filter: blur(20px);
+            display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast i { color: var(--aqua); }
+
+        /* ── FLOAT BTN ── */
+        #floatBtn {
+            position: fixed; bottom: 32px; right: 32px; z-index: 999;
+            display: flex; align-items: center; gap: 12px;
+            padding: 0 24px 0 6px; height: 52px;
+            background: linear-gradient(135deg, rgba(10,15,26,0.92) 0%, rgba(15,22,36,0.96) 100%);
+            border: 1px solid rgba(31,163,177,0.4); border-radius: 50px; cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+            backdrop-filter: blur(20px);
+            opacity: 0; transform: translateY(20px) scale(0.95);
+            transition: opacity 0.5s cubic-bezier(0.23,1,0.32,1), transform 0.5s cubic-bezier(0.23,1,0.32,1), box-shadow 0.4s;
+            pointer-events: none; text-decoration: none;
+        }
+        #floatBtn.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        #floatBtn:hover { transform: translateY(-4px) scale(1.02); border-color: rgba(31,163,177,0.7); }
+        .float-icon-wrap {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--aqua), #25c8d9);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; position: relative; box-shadow: 0 4px 12px rgba(31,163,177,0.4);
+        }
+        .float-icon-wrap i { font-size: 14px; color: white; }
+        .float-ring {
+            position: absolute; inset: -4px; border-radius: 50%;
+            border: 1.5px solid rgba(31,163,177,0.4);
+            animation: ringPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes ringPulse {
+            0%,100% { transform: scale(1); opacity: 0.6; }
+            50%      { transform: scale(1.3); opacity: 0; }
+        }
+        .float-text { display: flex; flex-direction: column; }
+        .float-text-main { font-size: 13px; font-weight: 700; color: white; }
+        .float-text-sub  { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+
+        .dl-btn {
+            background:transparent; color:var(--aqua);
+            border:1px solid var(--aqua); padding:9px 18px; border-radius:8px;
+            cursor:pointer; font-weight:600; font-size:13px; transition:0.3s; position:relative; overflow:hidden;
+        }
+        .dl-btn:hover { background:rgba(31,163,177,0.1); }
+        .dl-pulse {
+            position:absolute; top:6px; right:6px; width:6px; height:6px; border-radius:50%;
+            background:#7ff0ff; animation:pulseDot 2s ease-in-out infinite;
+        }
+        @keyframes pulseDot {
+            0%,100%{ opacity:1; transform:scale(1); }
+            50%    { opacity:0.4; transform:scale(1.5); }
+        }
+
+        /* ── MODAL ── */
+        .modal {
+            position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px);
+            display:flex; justify-content:center; align-items:center;
+            opacity:0; pointer-events:none; transition:0.3s; z-index:2000;
+        }
+        .modal.active { opacity:1; pointer-events:auto; }
+        .modal-content {
+            background:rgba(10,15,26,0.97); border:1px solid rgba(255,255,255,0.15);
+            padding:35px; border-radius:22px; width:340px; text-align:center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+        .modal-content h3 { margin-bottom:20px; font-size:20px; font-weight:700; }
+        .modal-content input {
+            width:100%; padding:13px; border-radius:10px;
+            border:1px solid rgba(255,255,255,0.15);
+            background:#0e1118; color:white; outline:none; margin-bottom:20px;
+        }
+        .modal-content input:focus { border-color:var(--aqua); }
+        .modal-buttons { display:flex; gap:10px; }
+        .modal-buttons button { flex:1; padding:11px; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-size:14px; }
+        #cancelBtn { background:rgba(255,255,255,0.08); color:white; border:1px solid rgba(255,255,255,0.1); }
+        #saveBtn   { background:var(--aqua); color:white; }
+
+        #capture { position:absolute; left:-9999px; width:800px; background:#05080e; padding:40px; }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:768px){
+            .navbar { padding:15px 20px; }
+            .hero { height:60vh; }
+            .hero h1 { letter-spacing:2px; }
+            .hero-meta { flex-wrap:wrap; justify-content:center; gap:10px; }
+            .stats-strip { padding:0 20px; flex-wrap:wrap; }
+            .stat-item { flex:1 1 45%; }
+            .main-grid { grid-template-columns:1fr; padding:20px 20px 40px; }
+            .glass-card { padding:25px; }
+            .highlights-container { padding:30px 20px; }
+            .explore-section { padding:40px 20px 60px; }
+            .h-grid { grid-template-columns:repeat(2,1fr); gap:15px; }
+            .h-card { height:250px; }
+            .itinerary-footer { grid-template-columns:1fr; gap:14px; }
+            table { display:block; overflow-x:auto; }
+            #floatBtn { bottom:20px; right:16px; }
+        }
+        #itinerary, #highlights { scroll-margin-top:100px; }
+    </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="toast"><i class="fa-solid fa-check-circle"></i> <span id="toastMsg"></span></div>
+
+<!-- FLOAT BUTTON -->
+<a href="travellers.html" id="floatBtn" onclick="saveSelectedDays()">
+    <div class="float-icon-wrap">
+        <i class="fa-solid fa-paper-plane"></i>
+        <div class="float-ring"></div>
+    </div>
+    <div class="float-text">
+        <span class="float-text-main">Book Santorini</span>
+        <span class="float-text-sub">Secure · Instant confirmation</span>
+    </div>
+</a>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo"><img src="logo.png" alt="Logo" class="logo-img"></div>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#itinerary">Itinerary</a>
+        <a href="#highlights">Highlights</a>
+        <a href="#explore">Explore</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <!-- SANTORINI -->
+<div style="position:absolute;top:100px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:8px;background:rgba(5,8,14,0.6);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(12px);padding:7px 16px;border-radius:50px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);">
+    <i class="fa-solid fa-location-dot" style="color:#1FA3B1;font-size:10px;"></i>
+    Greece &nbsp;·&nbsp; Southern Europe
+</div>
+    <div class="hero-bg"></div>
+    <h1>Santorini</h1>
+    <div class="hero-meta">
+        <div class="hero-pill"><i class="fa-solid fa-star"></i> 4.9 Rated</div>
+        <div class="hero-pill"><i class="fa-solid fa-clock"></i> Up to 5 Nights</div>
+        <div class="hero-pill"><i class="fa-solid fa-passport"></i> Schengen Visa</div>
+        <div class="hero-pill"><i class="fa-solid fa-users"></i> 7,600+ Travelers</div>
+    </div>
+    <div class="scroll-cue"><span>Scroll</span><i class="fa-solid fa-chevron-down"></i></div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+    <div class="stat-item"><div class="stat-num">₹1.4L</div><div class="stat-label">Per Person</div></div>
+    <div class="stat-item"><div class="stat-num">Up to 5D</div><div class="stat-label">Duration</div></div>
+    <div class="stat-item"><div class="stat-num">97%</div><div class="stat-label">Visa Success</div></div>
+    <div class="stat-item"><div class="stat-num">24×7</div><div class="stat-label">Support</div></div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main-grid">
+
+    <!-- ITINERARY -->
+    <div class="glass-card" id="itinerary">
+        <div class="itinerary-top">
+            <h2>Plan Your <span>Journey</span></h2>
+            <button class="dl-btn" onclick="downloadItinerary()">
+                <div class="dl-pulse"></div>
+                <i class="fa-solid fa-camera"></i> Download
+            </button>
+        </div>
+        <div class="days-selector-wrap">
+            <div class="days-selector-label">
+                <i class="fa-solid fa-calendar-days"></i>
+                How many days are you planning?
+            </div>
+            <div class="days-chips">
+                <div class="day-chip" data-days="1">1 Day</div>
+                <div class="day-chip active" data-days="2">2 Days</div>
+                <div class="day-chip" data-days="3">3 Days</div>
+                <div class="day-chip" data-days="4">4 Days</div>
+                <div class="day-chip" data-days="5">5 Days</div>
+            </div>
+            <div class="days-note">
+                <i class="fa-solid fa-info-circle"></i>
+                Santorini packages are curated for up to 5 days. Your selection will be carried forward when you book.
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:80px;">Day</th>
+                    <th>Morning</th>
+                    <th>Noon</th>
+                    <th>Evening</th>
+                </tr>
+            </thead>
+            <tbody id="itineraryContent"></tbody>
+        </table>
+        <div class="itinerary-footer" style="margin-top:20px;">
+            <div><i class="fa-solid fa-lightbulb"></i> Sample itinerary — fully customizable</div>
+            <div><i class="fa-solid fa-arrows-up-down-left-right"></i> Drag items to swap</div>
+            <div><i class="fa-solid fa-clock"></i> ~3–4 hrs per activity</div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="side-panel">
+
+        <div class="mini-card pricing-card">
+            <h4>Package Price</h4>
+            <div class="rating-row">
+                <span class="stars">★★★★★</span>
+                <span class="rating-text">4.9 · 2,100+ reviews</span>
+            </div>
+            <div class="price-big" id="priceDisplay">₹1,40,000 <span class="price-sub">/ person</span></div>
+            <div class="price-includes">
+                <span><i class="fa-solid fa-plane"></i> Flights</span>
+                <span><i class="fa-solid fa-hotel"></i> Hotel</span>
+                <span><i class="fa-solid fa-passport"></i> Visa</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 14px;margin:12px 0;display:flex;align-items:center;gap:10px;font-size:12px;">
+    <i class="fa-solid fa-circle-check" style="color:#4ade80;font-size:13px;flex-shrink:0;"></i>
+    <span style="color:rgba(255,255,255,0.45);">This package sold out <strong style="color:rgba(255,255,255,0.75);">4 times last summer</strong> — limited slots just re-opened</span>
+</div>
+            <button class="btn-main" onclick="saveSelectedDays(); window.location.href='travellers.html'">Secure Your Booking</button>
+            <div class="trust-badge"><i class="fa-solid fa-shield-halved"></i> Free cancellation · 100% secure payment</div>
+        </div>
+
+        <div class="mini-card">
+            <h4>Live Weather · Santorini</h4>
+            <div class="weather-row">
+                <div>
+                    <div class="weather-big" id="weatherDisplay">—</div>
+                    <div class="weather-desc" id="weatherDesc">Fetching...</div>
+                </div>
+                <div class="weather-feels" id="weatherFeels"></div>
+            </div>
+        </div>
+
+        <div class="mini-card">
+            <h4>Currency Converter</h4>
+            <input type="number" id="inrValue" placeholder="Amount in INR (₹)">
+            <div id="eurResult" style="margin-top:10px;font-weight:700;color:var(--aqua);font-size:18px;">EUR 0.00</div>
+        </div>
+
+        <div class="mini-card">
+            <h4>Best Time to Visit</h4>
+            <div class="time-legend">
+                <span><span class="dot peak"></span> Peak</span>
+                <span><span class="dot shoulder"></span> Shoulder</span>
+                <span><span class="dot off"></span> Off-season</span>
+            </div>
+            <!-- Santorini: Peak = Jun–Sep; Shoulder = Apr–May, Oct; Off = Nov–Mar -->
+            <div class="month-row">
+                <span class="month-pill off">Jan</span>
+                <span class="month-pill off">Feb</span>
+                <span class="month-pill off">Mar</span>
+                <span class="month-pill shoulder">Apr</span>
+                <span class="month-pill shoulder">May</span>
+                <span class="month-pill peak">Jun</span>
+                <span class="month-pill peak">Jul</span>
+                <span class="month-pill peak">Aug</span>
+                <span class="month-pill peak">Sep</span>
+                <span class="month-pill shoulder">Oct</span>
+                <span class="month-pill off">Nov</span>
+                <span class="month-pill off">Dec</span>
+            </div>
+        </div>
+
+        <div class="mini-card">
+            <h4>What to Pack</h4>
+            <div class="pack-list">
+                <div class="pack-item"><div class="check-box"></div><span class="pack-label">Schengen Visa & passport</span></div>
+                <div class="pack-item"><div class="check-box"></div><span class="pack-label">Light linen clothing (hot summers)</span></div>
+                <div class="pack-item"><div class="check-box"></div><span class="pack-label">Sunscreen SPF 50+ (intense sun)</span></div>
+                <div class="pack-item"><div class="check-box"></div><span class="pack-label">Comfortable sandals & flip-flops</span></div>
+                <div class="pack-item"><div class="check-box"></div><span class="pack-label">Power adapter (Type C/F)</span></div>
+                <div class="pack-item"><div class="check-box"></div><span class="pack-label">Swimwear & beach cover-up</span></div>
+                <div class="pack-item"><div class="check-box"></div><span class="pack-label">Light cardigan (evening breeze)</span></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="aqua-divider"></div>
+
+<!-- HIGHLIGHTS -->
+<section class="highlights-container" id="highlights">
+    <div class="section-heading">
+        <h2>Trip <span>Highlights</span></h2>
+        <span class="sub-label">Must-visit experiences</span>
+    </div>
+    <div class="h-grid">
+        <div class="h-card">
+            <span class="h-badge">Iconic</span>
+            <img src="https://images.unsplash.com/photo-1587291751345-d5ccb22d84b8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDZ8fHxlbnwwfHx8fHw%3D" alt="Oia Village">
+            <div class="info"><h3>Oia Village</h3><p>Blue domes & world's most famous sunset</p></div>
+        </div>
+        <div class="h-card">
+            <span class="h-badge">Volcanic</span>
+            <img src="https://images.unsplash.com/photo-1616398642917-fee2b30a49b8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q2FsZGVyYSUyMFZpZXd8ZW58MHx8MHx8fDA%3D   " alt="Caldera View">
+            <div class="info"><h3>Caldera Views</h3><p>Dramatic cliff-top panoramas over the crater</p></div>
+        </div>
+        <div class="h-card">
+            <span class="h-badge">Ancient</span>
+            <img src="https://images.unsplash.com/photo-1573341326174-66b8ba63e458?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8QWtyb3Rpcml8ZW58MHx8MHx8fDA%3D" alt="Akrotiri">
+            <div class="info"><h3>Akrotiri Ruins</h3><p>Bronze Age city — the Aegean's Pompeii</p></div>
+        </div>
+        <div class="h-card">
+            <span class="h-badge">Unique</span>
+            <img src="https://images.unsplash.com/photo-1656725174440-ae1c05ae76d6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fFJlZCUyMEJlYWNofGVufDB8fDB8fHww" alt="Red Beach">
+            <div class="info"><h3>Red Beach</h3><p>Dramatic volcanic red-black cliffs & clear water</p></div>
+        </div>
+    </div>
+</section>
+
+<div class="aqua-divider"></div>
+
+<!-- EXPLORE -->
+<section id="explore">
+    <section class="explore-section">
+        <div class="explore-header">
+            <div>
+                <h2>Explore <span>More of Santorini</span></h2>
+                <p>8 iconic experiences you can't miss</p>
+            </div>
+        </div>
+        <div class="explore-track-wrap">
+            <div class="explore-track" id="exploreTrack">
+
+                <!-- Card 1 -->
+                <div class="explore-card" data-title="Oia Sunset Walk">
+                    <div class="explore-card-overlay">
+                        <div class="overlay-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="overlay-text-main">Added to Itinerary!</div>
+                        <div class="overlay-text-sub">Find it in your planner above</div>
+                        <button class="overlay-undo-btn" onclick="undoBookExperience(this)">Undo</button>
+                    </div>
+                    <div class="explore-card-rating"><i class="fa-solid fa-star"></i> 4.9</div>
+                    <img class="explore-card-img" src="https://plus.unsplash.com/premium_photo-1661964149725-fbf14eabd38c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8T2lhJTIwU3Vuc2V0fGVufDB8fDB8fHww" alt="Oia Sunset">
+                    <div class="explore-card-body">
+                        <span class="explore-card-tag">Iconic</span>
+                        <div class="explore-card-title">Oia Sunset Walk</div>
+                        <div class="explore-card-desc">Stroll the cobblestone lanes of Oia and witness the world-famous sunset paint the caldera in gold and crimson.</div>
+                        <div class="explore-card-meta">
+                            <span><i class="fa-solid fa-clock"></i> 2–3 hrs</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Oia</span>
+                            <span><i class="fa-solid fa-tag"></i> Free</span>
+                        </div>
+                        <button class="explore-book-btn" onclick="bookExperience(this)"><i class="fa-solid fa-plus"></i> Add to Itinerary</button>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="explore-card" data-title="Caldera Sailing Cruise">
+                    <div class="explore-card-overlay">
+                        <div class="overlay-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="overlay-text-main">Added to Itinerary!</div>
+                        <div class="overlay-text-sub">Find it in your planner above</div>
+                        <button class="overlay-undo-btn" onclick="undoBookExperience(this)">Undo</button>
+                    </div>
+                    <div class="explore-card-rating"><i class="fa-solid fa-star"></i> 4.9</div>
+                    <img class="explore-card-img" src="https://images.unsplash.com/photo-1631261473229-679fb8079884?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Q2FsZGVyYSUyMFNhaWxpbmclMjBDcnVpc2V8ZW58MHx8MHx8fDA%3D" alt="Sailing">
+                    <div class="explore-card-body">
+                        <span class="explore-card-tag">Sailing</span>
+                        <div class="explore-card-title">Caldera Sailing Cruise</div>
+                        <div class="explore-card-desc">Sail around the volcanic caldera, swim in hot springs, visit the volcanic island of Nea Kameni and watch sunset from the sea.</div>
+                        <div class="explore-card-meta">
+                            <span><i class="fa-solid fa-clock"></i> 5–6 hrs</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Fira Port</span>
+                            <span><i class="fa-solid fa-tag"></i> ₹5,500</span>
+                        </div>
+                        <button class="explore-book-btn" onclick="bookExperience(this)"><i class="fa-solid fa-plus"></i> Add to Itinerary</button>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="explore-card" data-title="Red Beach & Black Beach">
+                    <div class="explore-card-overlay">
+                        <div class="overlay-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="overlay-text-main">Added to Itinerary!</div>
+                        <div class="overlay-text-sub">Find it in your planner above</div>
+                        <button class="overlay-undo-btn" onclick="undoBookExperience(this)">Undo</button>
+                    </div>
+                    <div class="explore-card-rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                    <img class="explore-card-img" src="https://plus.unsplash.com/premium_photo-1724088550763-2d99b31c2257?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8UmVkJTIwQmVhY2glMjBzYW50b3Jpbml8ZW58MHx8MHx8fDA%3D" alt="Red Beach">
+                    <div class="explore-card-body">
+                        <span class="explore-card-tag">Beaches</span>
+                        <div class="explore-card-title">Red Beach & Black Beach</div>
+                        <div class="explore-card-desc">Two of Earth's most otherworldly beaches — volcanic red and jet-black sands framed by towering lava cliffs.</div>
+                        <div class="explore-card-meta">
+                            <span><i class="fa-solid fa-clock"></i> Half day</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Akrotiri Area</span>
+                            <span><i class="fa-solid fa-tag"></i> Free</span>
+                        </div>
+                        <button class="explore-book-btn" onclick="bookExperience(this)"><i class="fa-solid fa-plus"></i> Add to Itinerary</button>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="explore-card" data-title="Santorini Wine Tasting">
+                    <div class="explore-card-overlay">
+                        <div class="overlay-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="overlay-text-main">Added to Itinerary!</div>
+                        <div class="overlay-text-sub">Find it in your planner above</div>
+                        <button class="overlay-undo-btn" onclick="undoBookExperience(this)">Undo</button>
+                    </div>
+                    <div class="explore-card-rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                    <img class="explore-card-img" src="https://images.unsplash.com/photo-1743427522092-3e3ef36e0a24?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8U2FudG9yaW5pJTIwV2luZSUyMFRhc3Rpbmd8ZW58MHx8MHx8fDA%3D" alt="Wine Tasting">
+                    <div class="explore-card-body">
+                        <span class="explore-card-tag">Food & Wine</span>
+                        <div class="explore-card-title">Santorini Wine Tasting</div>
+                        <div class="explore-card-desc">Sample world-class Assyrtiko whites and Vinsanto dessert wine at a caldera-edge winery with breathtaking views.</div>
+                        <div class="explore-card-meta">
+                            <span><i class="fa-solid fa-clock"></i> 2–3 hrs</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Pyrgos / Fira</span>
+                            <span><i class="fa-solid fa-tag"></i> ₹3,200</span>
+                        </div>
+                        <button class="explore-book-btn" onclick="bookExperience(this)"><i class="fa-solid fa-plus"></i> Add to Itinerary</button>
+                    </div>
+                </div>
+
+                <!-- Card 7 -->
+                <div class="explore-card" data-title="Perissa Beach Day">
+                    <div class="explore-card-overlay">
+                        <div class="overlay-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="overlay-text-main">Added to Itinerary!</div>
+                        <div class="overlay-text-sub">Find it in your planner above</div>
+                        <button class="overlay-undo-btn" onclick="undoBookExperience(this)">Undo</button>
+                    </div>
+                    <div class="explore-card-rating"><i class="fa-solid fa-star"></i> 4.6</div>
+                    <img class="explore-card-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFc3DtBdtHbTGNwbArr6cSuYrDnme10dSKhw&s" alt="Perissa Beach">
+                    <div class="explore-card-body">
+                        <span class="explore-card-tag">Leisure</span>
+                        <div class="explore-card-title">Perissa Beach Day</div>
+                        <div class="explore-card-desc">Relax on the long black-sand beach of Perissa lined with beach bars, water sports and the shadow of Mesa Vouno mountain.</div>
+                        <div class="explore-card-meta">
+                            <span><i class="fa-solid fa-clock"></i> Full day</span>
+                            <span><i class="fa-solid fa-location-dot"></i> East Santorini</span>
+                            <span><i class="fa-solid fa-tag"></i> Free entry</span>
+                        </div>
+                        <button class="explore-book-btn" onclick="bookExperience(this)"><i class="fa-solid fa-plus"></i> Add to Itinerary</button>
+                    </div>
+                </div>
+
+                <!-- Card 8 -->
+                <div class="explore-card" data-title="Ancient Thera Ruins">
+                    <div class="explore-card-overlay">
+                        <div class="overlay-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="overlay-text-main">Added to Itinerary!</div>
+                        <div class="overlay-text-sub">Find it in your planner above</div>
+                        <button class="overlay-undo-btn" onclick="undoBookExperience(this)">Undo</button>
+                    </div>
+                    <div class="explore-card-rating"><i class="fa-solid fa-star"></i> 4.6</div>
+                    <img class="explore-card-img" src="https://images.unsplash.com/photo-1656518849245-b6f2a8eaa0c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QW5jaWVudCUyMFRoZXJhJTIwcnVpbnN8ZW58MHx8MHx8fDA%3D" alt="Ancient Thera">
+                    <div class="explore-card-body">
+                        <span class="explore-card-tag">History</span>
+                        <div class="explore-card-title">Ancient Thera Ruins</div>
+                        <div class="explore-card-desc">Hike to the mountaintop ruins of an ancient Greek city perched at 370m — temples, theatres and sea views in all directions.</div>
+                        <div class="explore-card-meta">
+                            <span><i class="fa-solid fa-clock"></i> 3 hrs</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Mesa Vouno</span>
+                            <span><i class="fa-solid fa-tag"></i> ₹600</span>
+                        </div>
+                        <button class="explore-book-btn" onclick="bookExperience(this)"><i class="fa-solid fa-plus"></i> Add to Itinerary</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</section>
+
+<!-- CAPTURE DIV -->
+<div id="capture">
+    <h1 style="color:white;font-family:'Cinzel';margin-bottom:20px;">Santorini Itinerary</h1>
+    <div id="cloneArea"></div>
+   <p id="capturePriceLine" style="color:#1FA3B1;margin-top:20px;font-weight:800;">Price: ₹1,40,000 / Person · Up to 5 Days</p>
+    <p style="color:#666;font-size:12px;">Generated by Tap to Trip</p>
+</div>
+
+<!-- MODAL -->
+<div id="activityModal" class="modal">
+    <div class="modal-content">
+        <h3>Add Activity</h3>
+        <input type="text" id="activityInput" placeholder="e.g. Sunset dinner in Oia...">
+        <div class="modal-buttons">
+            <button id="cancelBtn">Cancel</button>
+            <button id="saveBtn">Add</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const WEATHER_KEY  = "71d70fb582f35e612bea71d41f9dcb4d";
+const EXCHANGE_KEY = "ad245b2376926a2ec02f73be";
+
+/* ══════════════════════════════════════════
+   SANTORINI ITINERARY — 5 DAYS
+══════════════════════════════════════════ */
+const DEFAULT_ITINERARY = [
+    {
+        label:   "Day 1 · Arrival & Fira Exploration",
+        morning: "Fira Town Walk",
+        noon:    "Caldera-View Lunch",
+        evening: "Fira Nightlife"
+    },
+    {
+        label:   "Day 2 · Oia & Sunset Magic",
+        morning: "Oia Village Stroll",
+        noon:    "Amoudi Bay Seafood",
+        evening: "Oia Iconic Sunset"
+    },
+    {
+        label:   "Day 3 · Sailing & Hot Springs",
+        morning: "Caldera Sailing Cruise",
+        noon:    "Volcanic Hot Springs Swim",
+        evening: "Nea Kameni Volcano Walk"
+    },
+    {
+        label:   "Day 4 · History & Beaches",
+        morning: "Akrotiri Ruins Tour",
+        noon:    "Red Beach Visit",
+        evening: "Perissa Beach Sunset"
+    },
+    {
+        label:   "Day 5 · Wine, Views & Farewell",
+        morning: "Fira to Oia Hike",
+        noon:    "Caldera-Edge Wine Tasting",
+        evening: "Farewell Dinner in Imerovigli"
+    }
+];
+
+/* ══════════════════════════════════════════
+   RENDER ITINERARY
+══════════════════════════════════════════ */
+function renderItinerary(days, animate=false) {
+    const tbody = document.getElementById('itineraryContent');
+    tbody.innerHTML = '';
+    for (let i=0; i<days; i++) {
+        const data = DEFAULT_ITINERARY[i];
+        const delay = animate ? i*80 : 0;
+
+        const labelRow = document.createElement('tr');
+        labelRow.className = 'day-label-row'+(animate?' day-animated':'');
+        if (animate) labelRow.style.animationDelay = delay+'ms';
+        labelRow.innerHTML = `<td colspan="4">— ${data.label}</td>`;
+        tbody.appendChild(labelRow);
+
+        const row = document.createElement('tr');
+        row.className = animate ? 'day-row day-animated' : 'day-row';
+        if (animate) row.style.animationDelay = (delay+40)+'ms';
+        const dayNum = String(i+1).padStart(2,'0');
+        row.innerHTML = `
+            <td style="font-weight:800;font-size:22px;color:rgba(255,255,255,0.18);">${dayNum}</td>
+            <td class="drop">${data.morning ? slotHTML(data.morning) : addActivityHTML()}</td>
+            <td class="drop">${data.noon    ? slotHTML(data.noon)    : addActivityHTML()}</td>
+            <td class="drop">${data.evening ? slotHTML(data.evening) : addActivityHTML()}</td>
+        `;
+        tbody.appendChild(row);
+    }
+    initDrag(); initDrops();
+     TapToTrip.updateDetailPagePrice("Santorini", days, "priceDisplay");
+}
+function slotHTML(name) {
+    return `<div class="slot" draggable="true">${name}<i class="fa-solid fa-xmark remove-btn"></i></div>`;
+}
+function addActivityHTML() { return `<div class="add-activity">+ Add Activity</div>`; }
+
+/* ══════════════════════════════════════════
+   BOOK EXPERIENCE
+══════════════════════════════════════════ */
+function bookExperience(btn) {
+    const card = btn.closest('.explore-card');
+    const title = card.dataset.title;
+    const drops = document.querySelectorAll('#itineraryContent .drop');
+    let placed = false;
+    for (const drop of drops) {
+        if (!drop.querySelector('.slot')) {
+            drop.innerHTML = '';
+            const slot = document.createElement('div');
+            slot.className = 'slot newly-added';
+            slot.setAttribute('draggable','true');
+            slot.innerHTML = `${title}<i class="fa-solid fa-xmark remove-btn"></i>`;
+            slot.addEventListener('dragstart', ()=>slot.classList.add('dragging'));
+            slot.addEventListener('dragend',   ()=>slot.classList.remove('dragging'));
+            drop.appendChild(slot);
+            placed = true; break;
+        }
+    }
+    if (!placed) { showToast('All slots full! Increase days or drag to rearrange.'); return; }
+    card.classList.add('added-to-itinerary');
+    showToast(`"${title}" added to your itinerary!`);
+    document.getElementById('itinerary').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function undoBookExperience(undoBtn) {
+    const card = undoBtn.closest('.explore-card');
+    const title = card.dataset.title;
+    document.querySelectorAll('#itineraryContent .slot').forEach(slot => {
+        if (slot.textContent.includes(title)) {
+            const drop = slot.parentElement;
+            slot.remove();
+            drop.innerHTML = addActivityHTML();
+        }
+    });
+    card.classList.remove('added-to-itinerary');
+    showToast(`"${title}" removed from itinerary.`);
+}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toast.classList.remove('show'), 3200);
+}
+
+/* ══════════════════════════════════════════
+   SCROLL / FLOAT BTN
+══════════════════════════════════════════ */
+window.addEventListener("scroll", ()=>{
+    const pct = window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+    document.getElementById("progress-bar").style.width = pct+"%";
+    document.querySelector(".navbar").classList.toggle("scrolled", window.scrollY>80);
+    document.getElementById("floatBtn").classList.toggle("visible", window.scrollY>window.innerHeight*0.5);
+});
+
+/* ══════════════════════════════════════════
+   DAY CHIPS
+══════════════════════════════════════════ */
+let selectedDays = 2;
+document.querySelectorAll('.day-chip').forEach(chip=>{
+    chip.addEventListener('click', function(){
+        document.querySelectorAll('.day-chip').forEach(c=>c.classList.remove('active'));
+        this.classList.add('active');
+        selectedDays = parseInt(this.dataset.days);
+        renderItinerary(selectedDays, true);
+    });
+});
+const savedDays = sessionStorage.getItem('trip_days');
+if (savedDays) {
+    const d = parseInt(savedDays);
+    document.querySelectorAll('.day-chip').forEach(c=>{
+        c.classList.remove('active');
+        if (parseInt(c.dataset.days)===d) c.classList.add('active');
+    });
+    selectedDays = d;
+}
+function saveSelectedDays() {
+    TapToTrip.saveTripDetails("Santorini", selectedDays);
+}
+
+/* ══════════════════════════════════════════
+   DRAG & DROP
+══════════════════════════════════════════ */
+function initDrag() {
+    document.querySelectorAll('.slot').forEach(s=>{
+        s.addEventListener('dragstart',()=>s.classList.add('dragging'));
+        s.addEventListener('dragend',  ()=>s.classList.remove('dragging'));
+    });
+}
+function initDrops() {
+    document.querySelectorAll('.drop').forEach(d=>{
+        d.addEventListener('dragover', e=>{e.preventDefault();d.classList.add('drag-over');});
+        d.addEventListener('dragleave',()=>d.classList.remove('drag-over'));
+        d.addEventListener('drop',()=>{
+            d.classList.remove('drag-over');
+            const dragged = document.querySelector('.dragging');
+            if (!dragged) return;
+            const existing = d.querySelector('.slot');
+            if (existing) dragged.parentNode.appendChild(existing);
+            d.appendChild(dragged);
+        });
+    });
+}
+
+/* ══════════════════════════════════════════
+   DOWNLOAD
+══════════════════════════════════════════ */
+function downloadItinerary() {
+    const livePriceEl = document.getElementById('priceDisplay');
+    const captureEl = document.getElementById('capturePriceLine');
+    if (livePriceEl && captureEl) {
+        captureEl.textContent = livePriceEl.textContent + " · Up to " + selectedDays + (selectedDays === 1 ? " Day" : " Days");
+    }
+    const content = document.getElementById('itinerary').cloneNode(true);
+    const btn = content.querySelector('.itinerary-top button');
+    if (btn) btn.remove();
+    const area = document.getElementById('cloneArea');
+    area.innerHTML=''; area.appendChild(content);
+    html2canvas(document.getElementById('capture'),{backgroundColor:'#05080e',scale:2}).then(canvas=>{
+        const link=document.createElement('a');
+        link.download='My-Santorini-Trip.png';
+        link.href=canvas.toDataURL(); link.click();
+    });
+}
+
+/* ══════════════════════════════════════════
+   WEATHER — THIRA (SANTORINI), GREECE
+══════════════════════════════════════════ */
+async function loadWeather() {
+    try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=36.3932&lon=25.4615&units=metric&appid=${WEATHER_KEY}`);
+        const data = await res.json();
+        const temp=Math.round(data.main.temp), feels=Math.round(data.main.feels_like), cond=data.weather[0].main;
+        const emojiMap={Clear:"☀️",Clouds:"☁️",Rain:"🌧️",Drizzle:"🌦️",Thunderstorm:"⛈️",Snow:"❄️",Mist:"🌫️",Haze:"🌫️",Fog:"🌫️"};
+        document.getElementById("weatherDisplay").textContent=`${temp}°C ${emojiMap[cond]||"🌤️"}`;
+        document.getElementById("weatherDesc").textContent=cond;
+        document.getElementById("weatherFeels").textContent=`Feels ${feels}°C`;
+    } catch {
+        document.getElementById("weatherDisplay").textContent="—";
+        document.getElementById("weatherDesc").textContent="Unavailable";
+    }
+}
+loadWeather();
+
+/* ══════════════════════════════════════════
+   CURRENCY CONVERTER — INR → EUR
+   (Santorini uses Euro as it is part of Greece)
+══════════════════════════════════════════ */
+let currentRate = 0;
+async function loadExchangeRate() {
+    try {
+        const res = await fetch(`https://v6.exchangerate-api.com/v6/${EXCHANGE_KEY}/latest/INR`);
+        const data = await res.json();
+        currentRate = data.conversion_rates.EUR;
+    } catch {}
+}
+document.getElementById("inrValue").addEventListener("input", function(e){
+    const val=parseFloat(e.target.value);
+    document.getElementById("eurResult").textContent=(!val||!currentRate)?"EUR 0.00":`EUR ${(val*currentRate).toFixed(2)}`;
+});
+loadExchangeRate();
+
+/* ══════════════════════════════════════════
+   MODAL — ADD ACTIVITY
+══════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", ()=>{
+    const modal=document.getElementById("activityModal");
+    const input=document.getElementById("activityInput");
+    const saveBtn=document.getElementById("saveBtn");
+    const cancelBtn=document.getElementById("cancelBtn");
+    let currentCell=null;
+
+    document.addEventListener("click", e=>{
+        if (e.target.classList.contains("add-activity")) {
+            currentCell=e.target.closest(".drop"); modal.classList.add("active"); input.focus();
+        }
+    });
+    cancelBtn.addEventListener("click",()=>{modal.classList.remove("active");input.value="";});
+    modal.addEventListener("click",e=>{if(e.target===modal){modal.classList.remove("active");input.value="";}});
+    saveBtn.addEventListener("click",()=>{
+        const name=input.value.trim();
+        if (name&&currentCell) {
+            currentCell.innerHTML="";
+            const slot=document.createElement("div");
+            slot.className="slot newly-added"; slot.setAttribute("draggable","true");
+            slot.innerHTML=`${name}<i class="fa-solid fa-xmark remove-btn"></i>`;
+            slot.addEventListener("dragstart",()=>slot.classList.add("dragging"));
+            slot.addEventListener("dragend",  ()=>slot.classList.remove("dragging"));
+            currentCell.appendChild(slot); initDrops();
+        }
+        modal.classList.remove("active"); input.value="";
+    });
+    input.addEventListener("keydown",e=>{if(e.key==="Enter")saveBtn.click();});
+
+    /* Scroll Spy */
+    const navLinks=document.querySelectorAll(".nav-links a");
+    const sections=[document.getElementById("itinerary"),document.getElementById("highlights"),document.getElementById("explore")];
+    window.addEventListener("scroll",()=>{
+        let current="";
+        sections.forEach(section=>{
+            if (!section) return;
+            if (window.scrollY>=section.offsetTop-140 && window.scrollY<section.offsetTop+section.offsetHeight) current=section.id;
+        });
+        navLinks.forEach(link=>{
+            link.classList.remove("active");
+            if (link.getAttribute("href")==="#"+current) link.classList.add("active");
+        });
+    });
+});
+
+/* ══════════════════════════════════════════
+   REMOVE ACTIVITY
+══════════════════════════════════════════ */
+document.addEventListener("click",e=>{
+    if (e.target.classList.contains("remove-btn")) {
+        const slot=e.target.closest(".slot"); const cell=slot.parentElement;
+        slot.remove(); const add=document.createElement("div");
+        add.className="add-activity"; add.textContent="+ Add Activity"; cell.appendChild(add);
+    }
+});
+
+/* ══════════════════════════════════════════
+   PACK CHECKLIST
+══════════════════════════════════════════ */
+document.querySelectorAll(".pack-item").forEach(item=>item.addEventListener("click",()=>item.classList.toggle("checked")));
+
+/* ══════════════════════════════════════════
+   EXPLORE DRAG SCROLL
+══════════════════════════════════════════ */
+const track=document.getElementById("exploreTrack");
+let isDown=false,startX,scrollLeft;
+track.addEventListener("mousedown",e=>{isDown=true;track.classList.add("grabbed");startX=e.pageX-track.offsetLeft;scrollLeft=track.scrollLeft;});
+track.addEventListener("mouseleave",()=>{isDown=false;track.classList.remove("grabbed");});
+track.addEventListener("mouseup",()=>{isDown=false;track.classList.remove("grabbed");});
+track.addEventListener("mousemove",e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-track.offsetLeft;track.scrollLeft=scrollLeft-(x-startX)*1.4;});
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+renderItinerary(selectedDays, false);
+function saveSelectedDays(){
+    TapToTrip.saveTripDetails("Santorini", selectedDays);
+}
+</script>
+<a href="https://wa.me/8667584491?text=Hi!%20I'm%20interested%20in%20the%20Paris%20package.%20Can%20you%20share%20more%20details%3F" target="_blank" id="waBtn" style="position:fixed;bottom:34px;left:34px;z-index:998;display:flex;align-items:center;gap:0;border-radius:50px;background:linear-gradient(135deg,#1a8f40,#25D366);text-decoration:none;box-shadow:0 8px 28px rgba(37,211,102,0.35);transition:all 0.4s cubic-bezier(0.23,1,0.32,1);overflow:hidden;max-width:50px;" onmouseover="this.style.maxWidth='200px';this.style.padding='0 20px 0 14px';this.style.gap='10px';this.style.boxShadow='0 12px 36px rgba(37,211,102,0.5)'" onmouseout="this.style.maxWidth='50px';this.style.padding='0';this.style.gap='0';this.style.boxShadow='0 8px 28px rgba(37,211,102,0.35)'">
+
+    <!-- Icon wrap -->
+    <div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;">
+        <i class="fa-brands fa-whatsapp" style="color:white;font-size:22px;position:relative;z-index:1;"></i>
+        <!-- Pulse ring -->
+        <div style="position:absolute;inset:-4px;border-radius:50%;border:1.5px solid rgba(37,211,102,0.5);animation:waPulse 2s ease-in-out infinite;"></div>
+    </div>
+
+    <!-- Expanded text -->
+    <div style="white-space:nowrap;overflow:hidden;">
+        <div style="font-size:12px;font-weight:700;color:white;letter-spacing:0.5px;">Chat with us</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:1px;">Typically replies in 2 min</div>
+    </div>
+
+</a>
+
+<style>
+@keyframes waPulse {
+    0%,100% { transform:scale(1); opacity:0.6; }
+    50%      { transform:scale(1.4); opacity:0; }
+}
+</style>
+</body>
+</html>

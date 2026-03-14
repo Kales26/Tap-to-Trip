@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Tap to Trip</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --aqua:#1FA3B1;--aqua-light:#38c5d5;--aqua-glow:rgba(31,163,177,.4);
+  --gold:#C9A84C;--gold-light:#e8c97e;
+  --dark:#04070D;--dark2:#080d18;--dark3:#0d1525;
+  --card:rgba(255,255,255,.04);--border:rgba(255,255,255,.09);
+  --red:#e05555;--green:#3dba7e;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+html,body{overflow-x:hidden;min-height:100%;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--aqua),var(--gold));border-radius:10px;}
+
+body{
+  background:var(--dark);color:white;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 10%,rgba(31,163,177,.13),transparent),
+    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(201,168,76,.09),transparent),
+    radial-gradient(ellipse 50% 60% at 50% 50%,rgba(31,163,177,.04),transparent);
+}
+body::after{
+  content:"";position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4;
+}
+
+/* ── LOGIN ── */
+#loginScreen{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#04070D 0%,#080d18 50%,#04070D 100%);
+}
+.login-box{
+  width:420px;padding:52px 48px;
+  background:rgba(255,255,255,.04);backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.1);border-radius:28px;
+  position:relative;box-shadow:0 40px 80px rgba(0,0,0,.7);
+  animation:popIn .6s cubic-bezier(.23,1,.32,1) both;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.9) translateY(20px);}to{opacity:1;transform:none;}}
+.login-box::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:50%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.login-logo{text-align:center;margin-bottom:32px;}
+.login-logo .logo-text{font-family:'Big Shoulders Display',sans-serif;font-size:30px;font-weight:900;letter-spacing:-1px;color:#fff;}
+.login-logo .logo-text span{color:var(--aqua);}
+.login-logo .admin-badge{
+  display:inline-block;margin-top:6px;padding:3px 14px;border-radius:20px;
+  background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light);
+}
+.login-field{margin-bottom:18px;}
+.login-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:7px;}
+.login-input{
+  width:100%;padding:14px 18px;border-radius:14px;
+  border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+  color:white;font-size:14px;outline:none;transition:.3s;font-family:'Outfit',sans-serif;
+}
+.login-input::placeholder{color:rgba(255,255,255,.2);}
+.login-input:focus{border-color:var(--aqua);background:rgba(255,255,255,.07);box-shadow:0 0 0 3px rgba(31,163,177,.1);}
+.login-btn{
+  width:100%;padding:15px;border:none;border-radius:50px;
+  background:linear-gradient(135deg,var(--aqua),#0f6f79);
+  color:#fff;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:.35s;box-shadow:0 0 24px rgba(31,163,177,.35);margin-top:8px;
+}
+.login-btn:hover{box-shadow:0 0 40px rgba(31,163,177,.6);transform:translateY(-2px);}
+.login-error{color:#ff7070;font-size:12px;text-align:center;margin-top:12px;display:none;padding:8px;border-radius:8px;background:rgba(220,60,60,.1);}
+
+/* ── GO TO HOME ── */
+.home-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:12px;width:100%;padding:13px;
+  border:1.5px solid rgba(255,255,255,.12);border-radius:50px;
+  background:transparent;
+  color:rgba(255,255,255,.45);font-size:13px;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:.3s;font-family:'Outfit',sans-serif;
+  text-decoration:none;
+}
+.home-btn:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.28);color:rgba(255,255,255,.8);transform:translateY(-1px);}
+.home-btn i{font-size:12px;}
+
+/* ── MAIN LAYOUT ── */
+#adminApp{display:none;min-height:100vh;}
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:240px;
+  background:rgba(0,0,0,.3);backdrop-filter:blur(20px);
+  border-right:1px solid rgba(255,255,255,.06);
+  z-index:100;display:flex;flex-direction:column;padding:28px 0;
+}
+.sidebar-logo{padding:0 24px 28px;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:20px;}
+.sidebar-logo .s-title{font-family:'Big Shoulders Display',sans-serif;font-size:22px;font-weight:900;letter-spacing:-0.5px;color:#fff;}
+.sidebar-logo .s-title span{color:var(--aqua);}
+.sidebar-logo .s-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:3px;}
+.nav-section{padding:0 14px;margin-bottom:8px;}
+.nav-section-label{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:0 10px;margin-bottom:8px;display:block;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;
+  font-size:13px;font-weight:600;color:rgba(255,255,255,.45);cursor:pointer;transition:.2s;margin-bottom:3px;border:1px solid transparent;
+}
+.nav-item i{font-size:14px;width:18px;text-align:center;}
+.nav-item:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.04);}
+.nav-item.active{color:#fff;background:rgba(31,163,177,.12);border-color:rgba(31,163,177,.2);}
+.nav-item.active i{color:var(--aqua);}
+.sidebar-footer{margin-top:auto;padding:16px 24px;border-top:1px solid rgba(255,255,255,.05);}
+.admin-user{display:flex;align-items:center;gap:10px;}
+.admin-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--aqua),#0a6b78);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;}
+.admin-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.7);}
+.admin-role{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px;}
+.logout-btn{margin-left:auto;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.logout-btn:hover{background:rgba(224,85,85,.15);border-color:rgba(224,85,85,.3);color:#ff7070;}
+
+/* ── CONTENT ── */
+.content{margin-left:240px;padding:36px 40px;position:relative;z-index:1;}
+.page{display:none;}.page.active{display:block;}
+.page-header{margin-bottom:32px;}
+.page-title{font-family:'Big Shoulders Display',sans-serif;font-size:38px;font-weight:900;letter-spacing:-1px;color:#fff;line-height:1;}
+.page-title span{color:var(--aqua);}
+.page-sub{font-size:13px;color:rgba(255,255,255,.35);margin-top:6px;}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:32px;}
+.stat-card{padding:24px 22px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;transition:.3s;}
+.stat-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card:nth-child(1)::before{background:linear-gradient(90deg,var(--aqua),var(--aqua-light));}
+.stat-card:nth-child(2)::before{background:linear-gradient(90deg,var(--gold),var(--gold-light));}
+.stat-card:nth-child(3)::before{background:linear-gradient(90deg,#3dba7e,#5dd49a);}
+.stat-card:nth-child(4)::before{background:linear-gradient(90deg,#b17aff,#d4a8ff);}
+.stat-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.14);box-shadow:0 12px 32px rgba(0,0,0,.4);}
+.stat-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px;}
+.stat-card:nth-child(1) .stat-icon{background:rgba(31,163,177,.15);color:var(--aqua);}
+.stat-card:nth-child(2) .stat-icon{background:rgba(201,168,76,.15);color:var(--gold-light);}
+.stat-card:nth-child(3) .stat-icon{background:rgba(61,186,126,.15);color:#3dba7e;}
+.stat-card:nth-child(4) .stat-icon{background:rgba(177,122,255,.15);color:#b17aff;}
+.stat-value{font-family:'Big Shoulders Display',sans-serif;font-size:36px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1;}
+.stat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;font-weight:500;}
+.stat-change{font-size:10px;font-weight:600;margin-top:8px;display:flex;align-items:center;gap:4px;}
+.stat-change.up{color:#3dba7e;}.stat-change.neutral{color:rgba(255,255,255,.3);}
+
+/* ── PANELS ── */
+.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:32px;}
+.panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;}
+.panel-title{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.panel-title i{color:var(--aqua);}
+.dest-bar-item{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.dest-bar-label{font-size:13px;font-weight:600;color:rgba(255,255,255,.8);width:90px;flex-shrink:0;}
+.dest-bar-track{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.dest-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--aqua),var(--gold));transition:width .8s cubic-bezier(.23,1,.32,1);}
+.dest-bar-count{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.35);width:24px;text-align:right;}
+.recent-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.recent-item:last-child{border-bottom:none;}
+.recent-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--aqua),#0a6b78);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.recent-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.8);}
+.recent-dest{font-size:11px;color:rgba(255,255,255,.3);margin-top:1px;}
+.recent-amount{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;color:var(--gold-light);}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.status-dot.confirmed{background:#3dba7e;}.status-dot.pending{background:var(--gold);}
+
+/* ── TABLE ── */
+.table-controls{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.search-box{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:12px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);}
+.search-box i{color:rgba(255,255,255,.25);font-size:13px;}
+.search-box input{background:none;border:none;outline:none;color:white;font-size:13px;font-family:'Outfit',sans-serif;width:100%;}
+.search-box input::placeholder{color:rgba(255,255,255,.2);}
+.filter-select{padding:11px 16px;border-radius:12px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);color:rgba(255,255,255,.6);font-size:13px;font-family:'Outfit',sans-serif;outline:none;cursor:pointer;}
+.filter-select option{background:#0d1525;}
+.refresh-btn{padding:11px 18px;border-radius:12px;background:rgba(31,163,177,.1);border:1.5px solid rgba(31,163,177,.25);color:var(--aqua);font-size:13px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:7px;}
+.refresh-btn:hover{background:rgba(31,163,177,.2);}
+.table-wrap{overflow-x:auto;border-radius:16px;border:1px solid rgba(255,255,255,.07);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:rgba(255,255,255,.04);}
+th{padding:13px 16px;font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:left;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap;}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:.2s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(255,255,255,.03);}
+td{padding:14px 16px;font-size:13px;color:rgba(255,255,255,.75);white-space:nowrap;}
+.td-id{font-family:'DM Mono',monospace;font-size:11px;color:var(--aqua-light);}
+.td-name{font-weight:600;color:#fff;}
+.td-dest{display:flex;align-items:center;gap:7px;}
+.td-dest-dot{width:7px;height:7px;border-radius:50%;background:var(--aqua);flex-shrink:0;}
+.td-price{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold-light);}
+.td-date{font-size:11px;color:rgba(255,255,255,.4);}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.badge-confirmed{background:rgba(61,186,126,.15);color:#3dba7e;border:1px solid rgba(61,186,126,.25);}
+.badge-pending{background:rgba(201,168,76,.12);color:var(--gold-light);border:1px solid rgba(201,168,76,.25);}
+
+/* ── ACTION BUTTONS ── */
+.action-btns{display:flex;gap:6px;align-items:center;}
+.act-btn{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;cursor:pointer;transition:.2s;border:1px solid transparent;
+  background:none;
+}
+
+/* Accept (pending → confirmed) */
+.act-accept{background:rgba(61,186,126,.1);color:#3dba7e;border-color:rgba(61,186,126,.2);}
+.act-accept:hover{background:rgba(61,186,126,.25);}
+
+/* Mark pending (confirmed → pending) */
+.act-pending{background:rgba(201,168,76,.1);color:var(--gold-light);border-color:rgba(201,168,76,.22);}
+.act-pending:hover{background:rgba(201,168,76,.25);}
+
+/* View */
+.act-view{background:rgba(31,163,177,.1);color:var(--aqua);border-color:rgba(31,163,177,.2);}
+.act-view:hover{background:rgba(31,163,177,.25);}
+
+/* Delete — ALWAYS shown */
+.act-delete{background:rgba(224,85,85,.1);color:#e05555;border-color:rgba(224,85,85,.2);}
+.act-delete:hover{background:rgba(224,85,85,.25);}
+
+.empty-state{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3);}
+.empty-state i{font-size:40px;margin-bottom:14px;color:rgba(255,255,255,.1);}
+.empty-state p{font-size:14px;}
+
+/* ── SETTINGS ── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.settings-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;}
+.settings-panel-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.settings-panel-title i{color:var(--aqua);}
+.settings-panel-sub{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:24px;}
+.s-field{margin-bottom:16px;}
+.s-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;margin-bottom:7px;}
+.s-input{width:100%;padding:13px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:white;font-size:13px;outline:none;transition:.3s;font-family:'Outfit',sans-serif;}
+.s-input::placeholder{color:rgba(255,255,255,.2);}
+.s-input:focus{border-color:var(--aqua);box-shadow:0 0 0 3px rgba(31,163,177,.1);}
+.s-btn{width:100%;padding:13px;border:none;border-radius:50px;margin-top:4px;background:linear-gradient(135deg,var(--aqua),#0f6f79);color:#fff;font-size:13px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:.3s;box-shadow:0 0 16px rgba(31,163,177,.25);}
+.s-btn:hover{box-shadow:0 0 28px rgba(31,163,177,.5);transform:translateY(-1px);}
+.s-btn-gold{background:linear-gradient(135deg,var(--gold),#a07830);}
+.s-btn-gold:hover{box-shadow:0 0 28px rgba(201,168,76,.4);}
+.s-msg{font-size:12px;margin-top:10px;text-align:center;padding:8px;border-radius:8px;display:none;}
+.s-msg.ok{background:rgba(61,186,126,.1);color:#3dba7e;display:block;}
+.s-msg.err{background:rgba(224,85,85,.1);color:#ff7070;display:block;}
+.cred-info{padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);margin-bottom:18px;}
+.cred-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;}
+.cred-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,.04);}
+.cred-key{font-size:11px;color:rgba(255,255,255,.35);}
+.cred-val{font-family:'DM Mono',monospace;font-size:12px;color:rgba(255,255,255,.65);}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;z-index:9990;background:rgba(4,7,13,.85);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s;}
+.modal-overlay.show{opacity:1;pointer-events:auto;}
+.modal{width:540px;max-width:92vw;max-height:88vh;overflow-y:auto;background:rgba(10,16,30,.95);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:36px;transform:scale(.95) translateY(10px);transition:.35s cubic-bezier(.23,1,.32,1);}
+.modal-overlay.show .modal{transform:none;}
+.modal::before{content:"";display:block;height:2px;background:linear-gradient(90deg,var(--aqua),var(--gold));border-radius:2px;margin-bottom:28px;}
+.modal-title{font-family:'Big Shoulders Display',sans-serif;font-size:26px;font-weight:900;color:#fff;margin-bottom:4px;}
+.modal-sub{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:24px;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.modal-field{padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);}
+.modal-field-label{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px;}
+.modal-field-value{font-size:14px;font-weight:600;color:#fff;}
+.modal-field-value.accent{color:var(--aqua);}.modal-field-value.gold{color:var(--gold-light);}
+.modal-close{width:100%;padding:13px;border:1.5px solid rgba(255,255,255,.12);border-radius:50px;background:transparent;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;cursor:pointer;transition:.2s;margin-top:4px;}
+.modal-close:hover{background:rgba(255,255,255,.06);color:#fff;}
+
+/* ── DELETE CONFIRM ── */
+.confirm-dialog{position:fixed;inset:0;z-index:9995;background:rgba(4,7,13,.88);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s;}
+.confirm-dialog.show{opacity:1;pointer-events:auto;}
+.confirm-box{width:380px;padding:36px 32px;text-align:center;background:rgba(10,16,30,.98);border:1px solid rgba(224,85,85,.25);border-radius:22px;transform:scale(.9);transition:.35s cubic-bezier(.23,1,.32,1);}
+.confirm-dialog.show .confirm-box{transform:none;}
+.confirm-icon{width:56px;height:56px;border-radius:50%;background:rgba(224,85,85,.12);border:1px solid rgba(224,85,85,.3);display:flex;align-items:center;justify-content:center;font-size:22px;color:#e05555;margin:0 auto 16px;}
+.confirm-title{font-family:'Big Shoulders Display',sans-serif;font-size:24px;font-weight:900;color:#fff;margin-bottom:8px;}
+.confirm-msg{font-size:13px;color:rgba(255,255,255,.4);line-height:1.5;margin-bottom:24px;}
+.confirm-actions{display:flex;gap:10px;}
+.confirm-cancel{flex:1;padding:13px;border-radius:50px;border:1.5px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;cursor:pointer;transition:.2s;}
+.confirm-cancel:hover{background:rgba(255,255,255,.06);}
+.confirm-delete{flex:1;padding:13px;border-radius:50px;border:none;background:linear-gradient(135deg,#e05555,#a02020);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;box-shadow:0 0 16px rgba(224,85,85,.3);}
+.confirm-delete:hover{box-shadow:0 0 26px rgba(224,85,85,.55);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;z-index:99999;padding:13px 20px;border-radius:14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;backdrop-filter:blur(12px);transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.23,1,.32,1);pointer-events:none;max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:rgba(31,163,177,.15);border:1px solid rgba(31,163,177,.35);color:#38c5d5;}
+.toast.error{background:rgba(224,85,85,.12);border:1px solid rgba(224,85,85,.3);color:#ff7070;}
+.toast.info{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);}
+.toast.warning{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);}
+
+.loading-row td{text-align:center;padding:40px;color:rgba(255,255,255,.3);}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(31,163,177,.2);border-top-color:var(--aqua);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:900px){
+  .sidebar{width:60px;}
+  .sidebar-logo,.nav-section-label,.nav-item span,.admin-name,.admin-role,.sidebar-footer .admin-user>*:not(.admin-avatar){display:none;}
+  .nav-item{justify-content:center;padding:12px;}
+  .content{margin-left:60px;padding:24px 18px;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .two-col,.settings-grid{grid-template-columns:1fr;}
+  .modal-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-text">Tap to <span>Trip</span></div>
+      <div class="admin-badge">Admin Panel</div>
+    </div>
+    <div class="login-field">
+      <label class="login-label">Username</label>
+      <input class="login-input" id="loginUser" type="text" placeholder="Enter admin username" autocomplete="off">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="loginPass" type="password" placeholder="Enter password" autocomplete="off">
+    </div>
+    <button class="login-btn" onclick="doLogin()">
+      <i class="fa-solid fa-right-to-bracket" style="margin-right:8px;"></i>Sign In
+    </button>
+    <div class="login-error" id="loginError">Invalid username or password</div>
+    <a href="index.html" class="home-btn">
+      <i class="fa-solid fa-house"></i> Go to Home
+    </a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg">Done</span>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="confirm-dialog" id="confirmDialog">
+  <div class="confirm-box">
+    <div class="confirm-icon"><i class="fa-solid fa-trash"></i></div>
+    <div class="confirm-title">Delete Booking?</div>
+    <div class="confirm-msg" id="confirmMsg">This will permanently delete the booking from Firebase.</div>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-delete" onclick="executeDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-title" id="modalTitle">Booking Details</div>
+    <div class="modal-sub" id="modalSub">Full booking information</div>
+    <div class="modal-grid" id="modalGrid"></div>
+    <button class="modal-close" onclick="closeModalDirect()"><i class="fa-solid fa-xmark"></i> Close</button>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="s-title">Tap to <span>Trip</span></div>
+      <div class="s-sub">Admin Dashboard</div>
+    </div>
+    <div class="nav-section">
+      <span class="nav-section-label">Overview</span>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <span class="nav-section-label">Bookings</span>
+      <div class="nav-item" onclick="showPage('bookings')">
+        <i class="fa-solid fa-ticket"></i><span>All Bookings</span>
+      </div>
+      <div class="nav-item" onclick="showPage('bookings'); filterStatus('confirmed')">
+        <i class="fa-solid fa-circle-check"></i><span>Confirmed</span>
+      </div>
+      <div class="nav-item" onclick="showPage('bookings'); filterStatus('pending')">
+        <i class="fa-solid fa-clock"></i><span>Pending</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <span class="nav-section-label">Admin</span>
+      <div class="nav-item" onclick="showPage('settings')">
+        <i class="fa-solid fa-gear"></i><span>Settings</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="admin-user">
+        <div class="admin-avatar" id="sidebarAvatar">A</div>
+        <div>
+          <div class="admin-name" id="sidebarName">Admin</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Logout">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Good morning, <span id="dashName">Admin</span></div>
+        <div class="page-sub">Here's what's happening with your bookings today.</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-ticket"></i></div>
+          <div class="stat-value" id="statTotal">—</div>
+          <div class="stat-label">Total Bookings</div>
+          <div class="stat-change neutral"><i class="fa-solid fa-database"></i> All time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <div class="stat-value" id="statRevenue">—</div>
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Confirmed bookings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-value" id="statConfirmed">—</div>
+          <div class="stat-label">Confirmed</div>
+          <div class="stat-change up"><i class="fa-solid fa-check"></i> Accepted</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+          <div class="stat-value" id="statPending">—</div>
+          <div class="stat-label">Pending</div>
+          <div class="stat-change neutral"><i class="fa-solid fa-hourglass-half"></i> Awaiting review</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-title"><i class="fa-solid fa-chart-bar"></i> Top Destinations</div>
+          <div id="destBars"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><i class="fa-solid fa-bolt"></i> Recent Bookings</div>
+          <div class="recent-list" id="recentList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="page" id="page-bookings">
+      <div class="page-header">
+        <div class="page-title">All <span>Bookings</span></div>
+        <div class="page-sub">Manage, review, confirm, and delete customer bookings.</div>
+      </div>
+      <div class="table-controls">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search by name, destination, booking ID…" oninput="filterTable()">
+        </div>
+        <select class="filter-select" id="statusFilter" onchange="filterTable()">
+          <option value="">All Status</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="pending">Pending</option>
+        </select>
+        <select class="filter-select" id="destFilter" onchange="filterTable()">
+          <option value="">All Destinations</option>
+        </select>
+        <button class="refresh-btn" onclick="loadBookings()">
+          <i class="fa-solid fa-arrows-rotate"></i> Refresh
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Customer</th>
+              <th>Destination</th>
+              <th>Travel Type</th>
+              <th>Duration</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsBody">
+            <tr class="loading-row"><td colspan="9"><div class="spinner"></div> Loading bookings…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div class="page-title">Admin <span>Settings</span></div>
+        <div class="page-sub">Change your login credentials and manage admin access.</div>
+      </div>
+      <div class="settings-grid">
+        <div class="settings-panel">
+          <div class="settings-panel-title"><i class="fa-solid fa-user"></i> Change Username</div>
+          <div class="settings-panel-sub">Update your admin login username.</div>
+          <div class="cred-info">
+            <div class="cred-row"><span class="cred-key">Current Username</span><span class="cred-val" id="currentUserDisplay">—</span></div>
+          </div>
+          <div class="s-field">
+            <label class="s-label">Current Password (to confirm)</label>
+            <input class="s-input" id="confirmPassForUser" type="password" placeholder="Enter current password">
+          </div>
+          <div class="s-field">
+            <label class="s-label">New Username</label>
+            <input class="s-input" id="newUsername" type="text" placeholder="Enter new username">
+          </div>
+          <button class="s-btn" onclick="changeUsername()"><i class="fa-solid fa-check" style="margin-right:6px;"></i>Update Username</button>
+          <div class="s-msg" id="userMsg"></div>
+        </div>
+        <div class="settings-panel">
+          <div class="settings-panel-title"><i class="fa-solid fa-lock"></i> Change Password</div>
+          <div class="settings-panel-sub">Set a new admin password for extra security.</div>
+          <div class="s-field">
+            <label class="s-label">Current Password</label>
+            <input class="s-input" id="currentPass" type="password" placeholder="Enter current password">
+          </div>
+          <div class="s-field">
+            <label class="s-label">New Password</label>
+            <input class="s-input" id="newPass" type="password" placeholder="Enter new password (min 6 chars)">
+          </div>
+          <div class="s-field">
+            <label class="s-label">Confirm New Password</label>
+            <input class="s-input" id="confirmNewPass" type="password" placeholder="Re-enter new password">
+          </div>
+          <button class="s-btn s-btn-gold" onclick="changePassword()"><i class="fa-solid fa-shield-halved" style="margin-right:6px;"></i>Update Password</button>
+          <div class="s-msg" id="passMsg"></div>
+        </div>
+        <div class="settings-panel">
+          <div class="settings-panel-title"><i class="fa-solid fa-database"></i> Firebase Status</div>
+          <div class="settings-panel-sub">Your Firestore database connection status.</div>
+          <div class="cred-info">
+            <div class="cred-row"><span class="cred-key">Project ID</span><span class="cred-val">tap-to-trip</span></div>
+            <div class="cred-row"><span class="cred-key">Database</span><span class="cred-val">Firestore</span></div>
+            <div class="cred-row"><span class="cred-key">Collection</span><span class="cred-val">bookings</span></div>
+            <div class="cred-row"><span class="cred-key">Status</span><span class="cred-val" id="fbStatus" style="color:#3dba7e;">● Connected</span></div>
+          </div>
+          <button class="s-btn" onclick="loadBookings(); showPage('bookings')"><i class="fa-solid fa-arrows-rotate" style="margin-right:6px;"></i>Sync Bookings Now</button>
+        </div>
+        <div class="settings-panel">
+          <div class="settings-panel-title"><i class="fa-solid fa-file-export"></i> Export Data</div>
+          <div class="settings-panel-sub">Download all booking records as a CSV file.</div>
+          <div class="cred-info">
+            <div class="cred-row"><span class="cred-key">Total Records</span><span class="cred-val" id="exportCount">Loading…</span></div>
+            <div class="cred-row"><span class="cred-key">Format</span><span class="cred-val">CSV (Excel compatible)</span></div>
+          </div>
+          <button class="s-btn s-btn-gold" onclick="exportCSV()"><i class="fa-solid fa-download" style="margin-right:6px;"></i>Export as CSV</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, query, orderBy }
+                            from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyBYZiUZN3y-jmFBMd62NXwgCdeVI6PE7c4",
+  authDomain:        "tap-to-trip.firebaseapp.com",
+  projectId:         "tap-to-trip",
+  storageBucket:     "tap-to-trip.firebasestorage.app",
+  messagingSenderId: "343392309079",
+  appId:             "1:343392309079:web:12b2a0fd9df9fe8aa0f812",
+  measurementId:     "G-KG66DTQKNF"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+window._db = db;
+window._fbFns = { collection, getDocs, doc, deleteDoc, updateDoc, query, orderBy };
+
+window.loadBookings = async function(){
+  const body = document.getElementById("bookingsBody");
+  body.innerHTML = `<tr class="loading-row"><td colspan="9"><div class="spinner"></div> Loading bookings…</td></tr>`;
+  try {
+    const q    = query(collection(db,"bookings"), orderBy("createdAt","desc"));
+    const snap = await getDocs(q);
+    window._allBookings = [];
+    snap.forEach(d => window._allBookings.push({ id: d.id, ...d.data() }));
+    renderTable(window._allBookings);
+    updateDashboard(window._allBookings);
+    updateDestFilter(window._allBookings);
+    document.getElementById("exportCount").textContent = window._allBookings.length + " records";
+    document.getElementById("fbStatus").textContent = "● Connected";
+    document.getElementById("fbStatus").style.color = "#3dba7e";
+  } catch(e) {
+    console.error(e);
+    body.innerHTML = `<tr class="loading-row"><td colspan="9" style="color:#ff7070;"><i class="fa-solid fa-triangle-exclamation"></i> Failed to load. Check Firebase rules.</td></tr>`;
+    document.getElementById("fbStatus").textContent = "● Error";
+    document.getElementById("fbStatus").style.color = "#e05555";
+  }
+};
+
+// ── Accept: pending → confirmed ──
+window.acceptBooking = async function(firestoreId, bookingId){
+  try {
+    await updateDoc(doc(db,"bookings",firestoreId), { status: "confirmed" });
+    const b = window._allBookings.find(x => x.id === firestoreId);
+    if(b) b.status = "confirmed";
+    renderTable(window._allBookings);
+    updateDashboard(window._allBookings);
+    showToast("success","fa-circle-check","Booking "+bookingId+" confirmed!");
+  } catch(e) {
+    showToast("error","fa-triangle-exclamation","Update failed.");
+  }
+};
+
+// ── Mark Pending: confirmed → pending ──
+window.markPending = async function(firestoreId, bookingId){
+  try {
+    await updateDoc(doc(db,"bookings",firestoreId), { status: "pending" });
+    const b = window._allBookings.find(x => x.id === firestoreId);
+    if(b) b.status = "pending";
+    renderTable(window._allBookings);
+    updateDashboard(window._allBookings);
+    showToast("warning","fa-clock","Booking "+bookingId+" moved to pending.");
+  } catch(e) {
+    showToast("error","fa-triangle-exclamation","Update failed.");
+  }
+};
+
+// ── Delete ──
+window.deleteBooking = async function(firestoreId, bookingId){
+  try {
+    await deleteDoc(doc(db,"bookings",firestoreId));
+    window._allBookings = window._allBookings.filter(b => b.id !== firestoreId);
+    renderTable(window._allBookings);
+    updateDashboard(window._allBookings);
+    showToast("success","fa-trash","Booking "+bookingId+" deleted.");
+  } catch(e) {
+    showToast("error","fa-triangle-exclamation","Delete failed. Check permissions.");
+  }
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  if(sessionStorage.getItem("ttt_admin_auth")==="1") showAdmin();
+});
+</script>
+
+<script>
+function getCreds(){
+  return {
+    username: localStorage.getItem("ttt_admin_user") || "admin",
+    password: localStorage.getItem("ttt_admin_pass") || "taptotrip123"
+  };
+}
+
+// ── LOGIN ──
+function doLogin(){
+  const u = document.getElementById("loginUser").value.trim();
+  const p = document.getElementById("loginPass").value;
+  const c = getCreds();
+  if(u===c.username && p===c.password){
+    sessionStorage.setItem("ttt_admin_auth","1");
+    document.getElementById("loginScreen").style.opacity="0";
+    setTimeout(()=>{ document.getElementById("loginScreen").style.display="none"; showAdmin(); },400);
+  } else {
+    const err=document.getElementById("loginError");
+    err.style.display="block";
+    setTimeout(()=>err.style.display="none",3000);
+  }
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter" && document.getElementById("loginScreen").style.display!=="none") doLogin();
+});
+
+function showAdmin(){
+  document.getElementById("adminApp").style.display="block";
+  const name=getCreds().username;
+  document.getElementById("sidebarName").textContent=name;
+  document.getElementById("dashName").textContent=name;
+  document.getElementById("sidebarAvatar").textContent=name.charAt(0).toUpperCase();
+  document.getElementById("currentUserDisplay").textContent=name;
+  if(window.loadBookings) window.loadBookings();
+}
+
+function doLogout(){
+  sessionStorage.removeItem("ttt_admin_auth");
+  document.getElementById("adminApp").style.display="none";
+  document.getElementById("loginScreen").style.display="flex";
+  document.getElementById("loginScreen").style.opacity="1";
+  document.getElementById("loginUser").value="";
+  document.getElementById("loginPass").value="";
+}
+
+// ── NAV ──
+function showPage(name){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("page-"+name).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  const items=document.querySelectorAll(".nav-item");
+  if(name==="dashboard") items[0].classList.add("active");
+  if(name==="bookings")  items[1].classList.add("active");
+  if(name==="settings")  items[3].classList.add("active");
+}
+
+// ── TABLE RENDER ──
+// Actions per status:
+//   pending   → [✓ Accept] [👁 View] [🗑 Delete]
+//   confirmed → [⏳ Mark Pending] [👁 View] [🗑 Delete]
+function renderTable(bookings){
+  const body=document.getElementById("bookingsBody");
+  if(!bookings.length){
+    body.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No bookings found</p></div></td></tr>`;
+    return;
+  }
+  body.innerHTML=bookings.map(b=>{
+    const name  = b.traveller?.name || b.bookingId || "—";
+    const dest  = b.destination || "—";
+    const type  = b.travellerType || "—";
+    const dur   = b.duration ? b.duration+" Days" : "—";
+    const date  = b.departureDate ? formatDate(b.departureDate) : "—";
+    const price = b.totalPriceFormatted || (b.totalPrice ? "₹"+Number(b.totalPrice).toLocaleString("en-IN") : "—");
+    const status= b.status || "pending";
+    const bid   = b.bookingId || b.id.substring(0,8).toUpperCase();
+
+    // Status-specific action button (left slot)
+    const statusBtn = status !== "confirmed"
+      ? `<button class="act-btn act-accept" onclick="acceptBooking('${b.id}','${bid}')" title="Confirm booking">
+           <i class="fa-solid fa-check"></i>
+         </button>`
+      : `<button class="act-btn act-pending" onclick="markPending('${b.id}','${bid}')" title="Move back to pending">
+           <i class="fa-solid fa-clock"></i>
+         </button>`;
+
+    return `<tr>
+      <td class="td-id">${bid}</td>
+      <td class="td-name">${name}</td>
+      <td><div class="td-dest"><div class="td-dest-dot"></div>${dest}</div></td>
+      <td>${type}</td>
+      <td>${dur}</td>
+      <td class="td-date">${date}</td>
+      <td class="td-price">${price}</td>
+      <td><span class="badge badge-${status}">${status}</span></td>
+      <td>
+        <div class="action-btns">
+          ${statusBtn}
+          <button class="act-btn act-view"   onclick="viewBooking('${b.id}')"            title="View details"><i class="fa-solid fa-eye"></i></button>
+          <button class="act-btn act-delete" onclick="promptDelete('${b.id}','${bid}')"  title="Delete booking"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+// ── FILTER ──
+function filterTable(){
+  const q  =(document.getElementById("searchInput").value||"").toLowerCase();
+  const st = document.getElementById("statusFilter").value;
+  const dt = document.getElementById("destFilter").value;
+  const all= window._allBookings||[];
+  renderTable(all.filter(b=>{
+    const name=(b.traveller?.name||"").toLowerCase();
+    const dest=(b.destination||"").toLowerCase();
+    const bid =(b.bookingId||"").toLowerCase();
+    return (!q||name.includes(q)||dest.includes(q)||bid.includes(q)) && (!st||b.status===st) && (!dt||b.destination===dt);
+  }));
+}
+function filterStatus(s){ document.getElementById("statusFilter").value=s; filterTable(); }
+
+function updateDestFilter(bookings){
+  const dests=[...new Set(bookings.map(b=>b.destination).filter(Boolean))].sort();
+  const sel=document.getElementById("destFilter");
+  const cur=sel.value;
+  sel.innerHTML=`<option value="">All Destinations</option>`+dests.map(d=>`<option value="${d}">${d}</option>`).join("");
+  sel.value=cur;
+}
+
+// ── DASHBOARD ──
+function updateDashboard(bookings){
+  const total    =bookings.length;
+  const confirmed=bookings.filter(b=>b.status==="confirmed").length;
+  const pending  =bookings.filter(b=>b.status==="pending"||!b.status).length;
+  const revenue  =bookings.filter(b=>b.status==="confirmed").reduce((s,b)=>s+(Number(b.totalPrice)||0),0);
+  const revFmt   =revenue>=100000?"₹"+(revenue/100000).toFixed(1)+"L":revenue>=1000?"₹"+(revenue/1000).toFixed(0)+"K":"₹"+revenue;
+  document.getElementById("statTotal").textContent    =total;
+  document.getElementById("statRevenue").textContent  =revFmt;
+  document.getElementById("statConfirmed").textContent=confirmed;
+  document.getElementById("statPending").textContent  =pending;
+  const destCount={};
+  bookings.forEach(b=>{ if(b.destination) destCount[b.destination]=(destCount[b.destination]||0)+1; });
+  const sorted=Object.entries(destCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const max=sorted[0]?.[1]||1;
+  document.getElementById("destBars").innerHTML=sorted.map(([d,c])=>`
+    <div class="dest-bar-item">
+      <div class="dest-bar-label">${d}</div>
+      <div class="dest-bar-track"><div class="dest-bar-fill" style="width:${Math.round(c/max*100)}%"></div></div>
+      <div class="dest-bar-count">${c}</div>
+    </div>`).join("")||"<div style='color:rgba(255,255,255,.3);font-size:13px;'>No data yet</div>";
+  document.getElementById("recentList").innerHTML=[...bookings].slice(0,6).map(b=>`
+    <div class="recent-item">
+      <div class="recent-avatar">${(b.traveller?.name||"?").charAt(0).toUpperCase()}</div>
+      <div>
+        <div class="recent-name">${b.traveller?.name||"Unknown"}</div>
+        <div class="recent-dest">${b.destination||"—"} · ${b.travellerType||"—"}</div>
+      </div>
+      <div class="recent-amount">${b.totalPriceFormatted||"—"}</div>
+      <div class="status-dot ${b.status==="confirmed"?"confirmed":"pending"}"></div>
+    </div>`).join("")||"<div style='color:rgba(255,255,255,.3);font-size:13px;padding:10px 0;'>No recent bookings</div>";
+}
+
+// ── VIEW MODAL ──
+function viewBooking(firestoreId){
+  const b=(window._allBookings||[]).find(x=>x.id===firestoreId);
+  if(!b) return;
+  document.getElementById("modalTitle").textContent=b.bookingId||"Booking Details";
+  document.getElementById("modalSub").textContent="Firestore ID: "+b.id;
+  const fields=[
+    {label:"Customer Name", value:b.traveller?.name||"—",          cls:""},
+    {label:"Email",         value:b.traveller?.email||"—",         cls:""},
+    {label:"Mobile",        value:b.traveller?.mobile||"—",        cls:""},
+    {label:"Destination",   value:b.destination||"—",              cls:"accent"},
+    {label:"Travel Type",   value:b.travellerType||"—",            cls:""},
+    {label:"Travellers",    value:b.travellerCount||"—",           cls:""},
+    {label:"Duration",      value:b.duration?(b.duration+" Days"):"—",cls:""},
+    {label:"Departure City",value:b.departureCode?`${b.departureCity} (${b.departureCode})`:b.departureCity||"—",cls:""},
+    {label:"Travel Date",   value:formatDate(b.departureDate)||"—",cls:""},
+    {label:"Total Amount",  value:b.totalPriceFormatted||"—",      cls:"gold"},
+    {label:"Status",        value:(b.status||"pending").toUpperCase(),cls:"accent"},
+    {label:"Booking ID",    value:b.bookingId||"—",                cls:"accent"},
+  ];
+  document.getElementById("modalGrid").innerHTML=fields.map(f=>`
+    <div class="modal-field">
+      <div class="modal-field-label">${f.label}</div>
+      <div class="modal-field-value ${f.cls}">${f.value}</div>
+    </div>`).join("");
+  document.getElementById("modalOverlay").classList.add("show");
+}
+function closeModal(e){ if(e.target===document.getElementById("modalOverlay")) closeModalDirect(); }
+function closeModalDirect(){ document.getElementById("modalOverlay").classList.remove("show"); }
+
+// ── DELETE ──
+let _pendingDelete=null;
+function promptDelete(firestoreId,bookingId){
+  _pendingDelete={firestoreId,bookingId};
+  document.getElementById("confirmMsg").textContent=`Booking "${bookingId}" will be permanently removed from Firebase. This cannot be undone.`;
+  document.getElementById("confirmDialog").classList.add("show");
+}
+function closeConfirm(){ _pendingDelete=null; document.getElementById("confirmDialog").classList.remove("show"); }
+function executeDelete(){ if(!_pendingDelete)return; window.deleteBooking(_pendingDelete.firestoreId,_pendingDelete.bookingId); closeConfirm(); }
+
+// ── SETTINGS ──
+function changeUsername(){
+  const confirmPass=document.getElementById("confirmPassForUser").value;
+  const newUser=document.getElementById("newUsername").value.trim();
+  const creds=getCreds();
+  const msg=document.getElementById("userMsg");
+  msg.className="s-msg";
+  if(!confirmPass||!newUser){setMsg(msg,"err","Please fill in all fields.");return;}
+  if(confirmPass!==creds.password){setMsg(msg,"err","Current password is incorrect.");return;}
+  if(newUser.length<3){setMsg(msg,"err","Username must be at least 3 characters.");return;}
+  localStorage.setItem("ttt_admin_user",newUser);
+  document.getElementById("currentUserDisplay").textContent=newUser;
+  document.getElementById("sidebarName").textContent=newUser;
+  document.getElementById("dashName").textContent=newUser;
+  document.getElementById("sidebarAvatar").textContent=newUser.charAt(0).toUpperCase();
+  document.getElementById("confirmPassForUser").value="";
+  document.getElementById("newUsername").value="";
+  setMsg(msg,"ok","Username updated successfully!");
+}
+function changePassword(){
+  const cur=document.getElementById("currentPass").value;
+  const nw=document.getElementById("newPass").value;
+  const conf=document.getElementById("confirmNewPass").value;
+  const creds=getCreds();
+  const msg=document.getElementById("passMsg");
+  msg.className="s-msg";
+  if(!cur||!nw||!conf){setMsg(msg,"err","Please fill in all fields.");return;}
+  if(cur!==creds.password){setMsg(msg,"err","Current password is incorrect.");return;}
+  if(nw.length<6){setMsg(msg,"err","New password must be at least 6 characters.");return;}
+  if(nw!==conf){setMsg(msg,"err","Passwords do not match.");return;}
+  localStorage.setItem("ttt_admin_pass",nw);
+  document.getElementById("currentPass").value="";
+  document.getElementById("newPass").value="";
+  document.getElementById("confirmNewPass").value="";
+  setMsg(msg,"ok","Password updated successfully!");
+}
+function setMsg(el,type,text){ el.className="s-msg "+type; el.textContent=text; setTimeout(()=>{ el.className="s-msg"; },4000); }
+
+// ── EXPORT CSV ──
+function exportCSV(){
+  const all=window._allBookings||[];
+  if(!all.length){showToast("info","fa-info-circle","No bookings to export.");return;}
+  const headers=["Booking ID","Customer Name","Email","Mobile","Destination","Travel Type","Travellers","Duration","Departure City","Travel Date","Total Amount","Status","Created At"];
+  const rows=all.map(b=>[
+    b.bookingId||"",b.traveller?.name||"",b.traveller?.email||"",b.traveller?.mobile||"",
+    b.destination||"",b.travellerType||"",b.travellerCount||"",
+    b.duration?(b.duration+" Days"):"",
+    b.departureCode?`${b.departureCity} (${b.departureCode})`:b.departureCity||"",
+    b.departureDate||"",b.totalPriceFormatted||"",b.status||"",
+    b.createdAt?.toDate?.().toLocaleDateString("en-IN")||""
+  ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(","));
+  const csv=[headers.join(","),...rows].join("\n");
+  const blob=new Blob([csv],{type:"text/csv"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download="TapToTrip-Bookings-"+new Date().toISOString().slice(0,10)+".csv";
+  a.click(); URL.revokeObjectURL(url);
+  showToast("success","fa-download","CSV exported successfully!");
+}
+
+// ── TOAST ──
+function showToast(type,icon,msg){
+  const t=document.getElementById("toast");
+  const ic=document.getElementById("toastIcon");
+  const m=document.getElementById("toastMsg");
+  t.className=`toast ${type} show`;
+  ic.className=`fa-solid ${icon}`;
+  m.textContent=msg;
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>t.classList.remove("show"),4000);
+}
+
+// ── HELPERS ──
+function formatDate(raw){
+  if(!raw||raw==="—") return "—";
+  const p=raw.split("-");
+  if(p.length<3) return raw;
+  return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+}
+</script>
+</body>
+</html>
