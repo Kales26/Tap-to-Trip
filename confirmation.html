@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Booking Confirmed — Tap to Trip</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+
+<script src="pricing.js"></script>
+<style>
+:root{
+  --aqua:#1FA3B1; --aqua-light:#38c5d5; --aqua-glow:rgba(31,163,177,.4);
+  --gold:#C9A84C; --gold-light:#e8c97e;
+  --cream:#F8F0E3; --dark:#04070D;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif;}
+html,body{overflow-x:hidden;width:100%;min-height:100%;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--aqua),var(--gold));border-radius:10px;}
+
+body{background:var(--dark);color:white;opacity:0;animation:pageIn .6s ease forwards;}
+@keyframes pageIn{to{opacity:1;}}
+
+body::after{
+  content:"";position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:99990;opacity:.35;
+}
+
+.bg-video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+.bg-overlay{position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(4,7,13,.88) 0%,rgba(4,7,13,.72) 50%,rgba(4,7,13,.88) 100%);}
+
+.navbar{
+  position:fixed;width:100%;top:0;left:0;z-index:1000;
+  padding:18px 60px;display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,0,0,.2);backdrop-filter:blur(4px);
+}
+.logo-img{height:28px;width:auto;filter:drop-shadow(0 0 10px rgba(31,163,177,.5));transition:.3s;}
+.logo-img:hover{filter:drop-shadow(0 0 20px rgba(31,163,177,.9));transform:scale(1.04);}
+
+.main{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 20px 60px;}
+
+.success-icon-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:36px;animation:iconEntry .8s cubic-bezier(.23,1,.32,1) forwards;opacity:0;animation-delay:.2s;}
+@keyframes iconEntry{0%{opacity:0;transform:scale(.5);}70%{transform:scale(1.1);}100%{opacity:1;transform:scale(1);}}
+.success-circle{width:88px;height:88px;border-radius:50%;background:rgba(31,163,177,.12);border:1.5px solid rgba(31,163,177,.5);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 40px rgba(31,163,177,.25);}
+.success-circle i{font-size:32px;color:var(--aqua);}
+.success-ring{position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(31,163,177,.2);animation:ringExpand 2s ease-in-out infinite;}
+.success-ring2{position:absolute;inset:-22px;border-radius:50%;border:1px solid rgba(31,163,177,.1);animation:ringExpand 2s ease-in-out .5s infinite;}
+@keyframes ringExpand{0%{transform:scale(1);opacity:.6;}100%{transform:scale(1.2);opacity:0;}}
+
+.confirm-card{width:92%;max-width:780px;background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.15);border-radius:32px;padding:48px 52px;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.65);}
+.confirm-card::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.confirm-card::after{content:"";position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);width:60%;height:60px;border-radius:50%;background:radial-gradient(ellipse,rgba(31,163,177,.15),transparent 70%);pointer-events:none;}
+
+.card-header{text-align:center;margin-bottom:40px;}
+.eyebrow{display:block;font-size:10px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:var(--gold-light);opacity:.75;margin-bottom:8px;}
+.card-title{font-family:'Big Shoulders Display',sans-serif;font-size:42px;font-weight:900;letter-spacing:-1px;line-height:.95;color:#fff;}
+.card-title span{color:var(--aqua);}
+.card-subtitle{font-size:14px;color:rgba(255,255,255,.4);margin-top:10px;letter-spacing:.3px;}
+.header-line{display:block;width:56px;height:2px;background:linear-gradient(90deg,var(--aqua),var(--gold));border-radius:2px;margin:14px auto 0;}
+
+.booking-id-wrap{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:36px;}
+.booking-id{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:8px 22px;border-radius:50px;background:rgba(31,163,177,.08);border:1px solid rgba(31,163,177,.25);color:var(--aqua-light);}
+.booking-id i{font-size:11px;margin-right:6px;}
+.copy-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.25s;}
+.copy-btn:hover{background:rgba(31,163,177,.12);border-color:var(--aqua);color:var(--aqua);}
+
+.details-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;}
+.detail-item{padding:18px 20px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:16px;transition:.3s;animation:itemFade .5s ease both;}
+.detail-item:hover{background:rgba(31,163,177,.07);border-color:rgba(31,163,177,.2);transform:translateY(-2px);}
+@keyframes itemFade{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.detail-icon{width:42px;height:42px;border-radius:12px;background:rgba(31,163,177,.1);border:1px solid rgba(31,163,177,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.detail-icon i{font-size:16px;color:var(--aqua);}
+.detail-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;display:block;}
+.detail-value{font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;color:#fff;letter-spacing:.2px;}
+.detail-value.highlight{color:var(--aqua);}
+.detail-value.price-highlight{color:var(--gold-light);font-size:15px;}
+
+.dest-strip{border-radius:20px;overflow:hidden;position:relative;height:130px;margin-bottom:32px;border:1px solid rgba(255,255,255,.08);}
+.dest-strip-img{width:100%;height:100%;object-fit:cover;filter:brightness(.55);transition:.4s;}
+.dest-strip:hover .dest-strip-img{filter:brightness(.7);}
+.dest-strip-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(4,7,13,.85),rgba(4,7,13,.2));display:flex;align-items:center;padding:0 28px;gap:18px;}
+.dest-name{font-family:'Big Shoulders Display',sans-serif;font-size:38px;font-weight:900;letter-spacing:-1px;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.8);}
+.dest-badge{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;background:rgba(31,163,177,.15);border:1px solid rgba(31,163,177,.3);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--aqua-light);}
+
+.traveller-row{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);margin-bottom:16px;}
+.traveller-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--aqua),#0d7a87);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;font-family:'Big Shoulders Display',sans-serif;}
+.traveller-name{font-weight:700;font-size:16px;}
+.traveller-email{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;}
+
+.section-divider{display:flex;align-items:center;gap:12px;margin:28px 0 20px;}
+.section-divider-line{flex:1;height:1px;background:rgba(255,255,255,.06);}
+.section-divider-label{font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);}
+
+.action-row{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap;}
+.btn-primary{flex:1;min-width:140px;padding:15px;border:none;border-radius:50px;background:linear-gradient(135deg,var(--aqua),#0f6f79);color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.35s;box-shadow:0 0 20px rgba(31,163,177,.3);position:relative;overflow:hidden;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);opacity:0;transition:.35s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(31,163,177,.55);}
+.btn-primary:hover::before{opacity:1;}
+.btn-secondary{padding:15px 22px;border-radius:50px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:.3s;display:flex;align-items:center;gap:8px;text-decoration:none;}
+.btn-secondary:hover{border-color:rgba(255,255,255,.4);color:#fff;background:rgba(255,255,255,.08);}
+.btn-whatsapp{padding:15px 22px;border-radius:50px;border:1.5px solid rgba(37,211,102,.35);background:rgba(37,211,102,.08);color:rgba(255,255,255,.8);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:.3s;display:flex;align-items:center;gap:8px;text-decoration:none;}
+.btn-whatsapp i{color:#25D366;}
+.btn-whatsapp:hover{border-color:rgba(37,211,102,.65);background:rgba(37,211,102,.15);color:#fff;}
+
+.next-steps{margin-top:28px;padding:22px 24px;border-radius:16px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);}
+.next-steps-title{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light);opacity:.8;margin-bottom:16px;display:block;}
+.next-step-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.next-step-item:last-child{margin-bottom:0;}
+.step-dot{width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--gold-light);flex-shrink:0;margin-top:1px;}
+.step-text{font-size:13px;color:rgba(255,255,255,.55);line-height:1.5;}
+.step-text strong{color:rgba(255,255,255,.85);font-weight:600;}
+
+.firebase-toast{
+  position:fixed;bottom:28px;right:28px;z-index:9999;
+  padding:12px 20px;border-radius:14px;
+  font-size:13px;font-weight:600;letter-spacing:.3px;
+  display:flex;align-items:center;gap:10px;
+  backdrop-filter:blur(12px);
+  transform:translateY(80px);opacity:0;
+  transition:all .4s cubic-bezier(.23,1,.32,1);
+  max-width:320px;pointer-events:none;
+}
+.firebase-toast.show{transform:translateY(0);opacity:1;}
+.firebase-toast.saving{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:#e8c97e;}
+.firebase-toast.success{background:rgba(31,163,177,.15);border:1px solid rgba(31,163,177,.35);color:#38c5d5;}
+.firebase-toast.error{background:rgba(220,60,60,.12);border:1px solid rgba(220,60,60,.3);color:#ff7070;}
+.firebase-toast i{font-size:15px;flex-shrink:0;}
+
+.detail-item:nth-child(1){animation-delay:.3s;}
+.detail-item:nth-child(2){animation-delay:.38s;}
+.detail-item:nth-child(3){animation-delay:.46s;}
+.detail-item:nth-child(4){animation-delay:.54s;}
+.detail-item:nth-child(5){animation-delay:.62s;}
+.detail-item:nth-child(6){animation-delay:.70s;}
+.detail-item:nth-child(7){animation-delay:.78s;}
+
+@media(max-width:600px){
+  .navbar{padding:12px 20px;}.logo-img{height:22px;}
+  .main{padding:90px 16px 50px;align-items:flex-start;justify-content:center;}
+  .main > div{width:100%;max-width:100%;display:flex;flex-direction:column;align-items:center;}
+  .success-icon-wrap{width:100%;display:flex;justify-content:center;}
+  .confirm-card{width:100%;max-width:100%;padding:28px 18px;border-radius:22px;margin:0 auto;}
+  .card-title{font-size:30px;}.details-grid{grid-template-columns:1fr;}
+  .action-row{flex-direction:column;}
+  .btn-primary,.btn-secondary,.btn-whatsapp{justify-content:center;width:100%;}
+  .dest-name{font-size:26px;}.dest-strip{height:110px;}
+  .booking-id{font-size:11px;letter-spacing:2px;}
+  .firebase-toast{bottom:16px;right:16px;left:16px;max-width:unset;}
+}
+</style>
+</head>
+<body>
+
+<div class="firebase-toast saving" id="fbToast">
+  <i id="fbToastIcon" class="fa-solid fa-spinner fa-spin"></i>
+  <span id="fbToastMsg">Saving your booking…</span>
+</div>
+
+<video autoplay muted loop class="bg-video"><source src="confirmation-bg.mp4" type="video/mp4"></video>
+<div class="bg-overlay"></div>
+
+<div class="navbar">
+  <div class="logo"><img src="logo.png" class="logo-img" alt="Tap to Trip"></div>
+</div>
+
+<div class="main">
+  <div style="width:92%;max-width:780px;">
+
+    <div class="success-icon-wrap">
+      <div class="success-circle">
+        <i class="fa-solid fa-check"></i>
+        <div class="success-ring"></div>
+        <div class="success-ring2"></div>
+      </div>
+    </div>
+
+    <div class="confirm-card" id="confirmCard">
+
+      <div class="card-header">
+        <span class="eyebrow">Booking confirmed</span>
+        <div class="card-title">Your trip is <span>booked!</span></div>
+        <p class="card-subtitle">We've received your details. Our team will contact you within 24 hours.</p>
+        <span class="header-line"></span>
+      </div>
+
+      <div class="booking-id-wrap">
+        <div class="booking-id"><i class="fa-solid fa-tag"></i><span id="bookingIdText">TTT-000000</span></div>
+        <button class="copy-btn" onclick="copyId()" title="Copy booking ID"><i class="fa-regular fa-copy"></i></button>
+      </div>
+
+      <div class="dest-strip">
+        <img class="dest-strip-img" id="destImg" src="" alt="Destination">
+        <div class="dest-strip-overlay">
+          <div class="dest-name" id="destNameDisplay">—</div>
+          <div class="dest-badge"><i class="fa-solid fa-location-dot"></i> <span id="destBadgeText">Destination</span></div>
+        </div>
+      </div>
+
+      <div class="traveller-row">
+        <div class="traveller-avatar" id="travellerInitial">?</div>
+        <div>
+          <div class="traveller-name" id="travellerName">—</div>
+          <div class="traveller-email" id="travellerEmail">—</div>
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">Trip details</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="details-grid" id="detailsGrid"></div>
+
+      <div class="next-steps">
+        <span class="next-steps-title">What happens next</span>
+        <div class="next-step-item"><div class="step-dot">1</div><div class="step-text"><strong>Confirmation email</strong> sent to your registered email within a few minutes.</div></div>
+        <div class="next-step-item"><div class="step-dot">2</div><div class="step-text"><strong>Our travel expert</strong> will call you within 24 hours to confirm your itinerary.</div></div>
+        <div class="next-step-item"><div class="step-dot">3</div><div class="step-text"><strong>Visa & flight</strong> processing begins after your initial confirmation.</div></div>
+      </div>
+
+      <div class="action-row">
+        <a href="home.html" class="btn-primary"><i class="fa-solid fa-house"></i> Back to Home</a>
+        <button class="btn-secondary" id="saveBtn" onclick="saveReceipt()"><i class="fa-solid fa-receipt"></i> Save Receipt</button>
+        <button class="btn-whatsapp" id="waBtn" onclick="shareWhatsApp()"><i class="fa-brands fa-whatsapp"></i> Share on WhatsApp</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── ALL SCRIPTS IN ONE BLOCK — fixes the module/DOMContentLoaded timing bug ── -->
+<script type="module">
+
+// ── Firebase imports ────────────────────────────────────────────
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics }    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+import { getFirestore, collection, addDoc, serverTimestamp }
+                           from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyBYZiUZN3y-jmFBMd62NXwgCdeVI6PE7c4",
+  authDomain:        "tap-to-trip.firebaseapp.com",
+  projectId:         "tap-to-trip",
+  storageBucket:     "tap-to-trip.firebasestorage.app",
+  messagingSenderId: "343392309079",
+  appId:             "1:343392309079:web:12b2a0fd9df9fe8aa0f812",
+  measurementId:     "G-KG66DTQKNF"
+};
+
+const app = initializeApp(firebaseConfig);
+getAnalytics(app);
+const db = getFirestore(app);
+
+// ── Helpers ─────────────────────────────────────────────────────
+const destImages = {
+  "Dubai":       "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1000&auto=format&fit=crop",
+  "Paris":       "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1000&auto=format&fit=crop",
+  "Bali":        "https://images.unsplash.com/photo-1604430289272-0851a606105d?q=80&w=1000&auto=format&fit=crop",
+  "Switzerland": "https://images.unsplash.com/photo-1528493366314-e317cd98dd52?q=80&w=1000&auto=format&fit=crop",
+  "Tokyo":       "https://plus.unsplash.com/premium_photo-1666700698920-d2d2bba589f8?q=80&w=1000&auto=format&fit=crop",
+  "New York":    "https://images.unsplash.com/photo-1518235506717-e1ed3306a89b?q=80&w=1000&auto=format&fit=crop",
+  "Norway":      "https://images.unsplash.com/photo-1544009520-e2ea9189f15e?q=80&w=1000&auto=format&fit=crop",
+  "Iceland":     "https://images.unsplash.com/photo-1531168556467-80aace0d0144?q=80&w=1000&auto=format&fit=crop",
+  "Maldives":    "https://images.unsplash.com/photo-1611561937871-2e76de16d872?q=80&w=1000&auto=format&fit=crop",
+  "Santorini":   "https://plus.unsplash.com/premium_photo-1697729900945-598459160f7b?q=80&w=1000&auto=format&fit=crop",
+  "Scotland":    "https://images.unsplash.com/photo-1571936804022-90d128047136?q=80&w=1000&auto=format&fit=crop",
+  "Thailand":    "https://images.unsplash.com/photo-1544467187-784a3534a696?q=80&w=1000&auto=format&fit=crop",
+  "Nepal":       "https://images.unsplash.com/photo-1599751229070-854ae5c90869?q=80&w=1000&auto=format&fit=crop",
+  "Mauritius":   "https://images.unsplash.com/photo-1581859814481-bfd944e3122f?q=80&w=1000&auto=format&fit=crop",
+  "Seychelles":  "https://images.unsplash.com/photo-1595773382291-06d1b6cbc43b?q=80&w=1000&auto=format&fit=crop",
+  "New Zealand": "https://images.unsplash.com/photo-1597655601841-214a4cfe8b2c?q=80&w=1000&auto=format&fit=crop",
+};
+
+function genBookingId(){
+  const id = "TTT-" + Math.random().toString(36).substring(2,8).toUpperCase();
+  localStorage.setItem("bookingId", id);
+  return id;
+}
+
+function formatDate(raw){
+  if(!raw) return "—";
+  const p = raw.split("-");
+  if(p.length < 3) return raw;
+  return new Date(+p[0], +p[1]-1, +p[2]).toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"});
+}
+
+function showToast(type, iconClass, msg, duration = 4500){
+  const toast = document.getElementById("fbToast");
+  const icon  = document.getElementById("fbToastIcon");
+  const msgEl = document.getElementById("fbToastMsg");
+  toast.className   = `firebase-toast ${type} show`;
+  icon.className    = `fa-solid ${iconClass}`;
+  msgEl.textContent = msg;
+  if(duration) setTimeout(() => toast.classList.remove("show"), duration);
+}
+
+async function saveBookingToFirestore(data){
+  showToast("saving", "fa-spinner fa-spin", "Saving your booking…", 0);
+  try {
+    const docRef = await addDoc(collection(db, "bookings"), {
+      ...data,
+      createdAt: serverTimestamp()
+    });
+    console.log("✅ Booking saved — Firestore ID:", docRef.id);
+    showToast("success", "fa-cloud-arrow-up", "Booking saved successfully!", 5000);
+  } catch(err) {
+    console.error("❌ Firestore error:", err);
+    showToast("error", "fa-triangle-exclamation", "Save failed. Please contact support.", 7000);
+  }
+}
+
+// ── Main init — runs when module loads (DOM is already ready) ───
+// NOTE: module scripts run after DOM is parsed, so no DOMContentLoaded needed
+const place    = localStorage.getItem("selectedPlace")  || "—";
+const travType = localStorage.getItem("travellerType")  || "—";
+const duration = localStorage.getItem("tripDuration")   || "—";
+const city     = localStorage.getItem("departureCity")  || "—";
+const code     = localStorage.getItem("departureCode")  || "";
+const date     = localStorage.getItem("departureDate")  || "—";
+const username = localStorage.getItem("bookingName")    || "Traveller";
+const email    = localStorage.getItem("bookingEmail")   || "Not provided";
+const mobile   = localStorage.getItem("bookingMobile")  || "Not provided";
+const bookId   = genBookingId();
+const cityLabel = code ? `${city} (${code})` : city;
+
+const priceFormatted = TapToTrip.getConfirmedPriceFormatted();
+const days  = TapToTrip.getDays();
+const count = TapToTrip.getTravellerCount();
+
+// Populate UI
+document.getElementById("bookingIdText").textContent   = bookId;
+document.getElementById("destNameDisplay").textContent = place;
+document.getElementById("destBadgeText").textContent   = place;
+document.getElementById("destImg").src = destImages[place] || destImages["Dubai"];
+document.getElementById("travellerInitial").textContent = username.charAt(0).toUpperCase();
+document.getElementById("travellerName").textContent    = username;
+document.getElementById("travellerEmail").textContent   = email;
+
+const detailsData = [
+  { icon:"fa-location-dot",      label:"Destination",    value: place,                                      highlight:true    },
+  { icon:"fa-users",             label:"Travel Type",    value: travType,                                   highlight:false   },
+  { icon:"fa-moon",              label:"Duration",       value: duration !== "—" ? duration+" Days" : "—", highlight:false   },
+  { icon:"fa-plane-departure",   label:"Departure City", value: cityLabel,                                  highlight:false   },
+  { icon:"fa-calendar-days",     label:"Travel Date",    value: formatDate(date),                           highlight:false   },
+  { icon:"fa-phone",             label:"Contact",        value: mobile,                                     highlight:false   },
+  { icon:"fa-indian-rupee-sign", label:"Total Amount",   value: "₹" + priceFormatted,                      highlight:"price" },
+];
+
+const grid = document.getElementById("detailsGrid");
+detailsData.forEach(item => {
+  const div = document.createElement("div");
+  div.className = "detail-item";
+  const valClass = item.highlight === "price" ? "detail-value price-highlight"
+                 : item.highlight ? "detail-value highlight"
+                 : "detail-value";
+  div.innerHTML = `<div class="detail-icon"><i class="fa-solid ${item.icon}"></i></div>
+    <div class="detail-text">
+      <span class="detail-label">${item.label}</span>
+      <div class="${valClass}">${item.value}</div>
+    </div>`;
+  grid.appendChild(div);
+});
+
+// Save to Firestore
+saveBookingToFirestore({
+  bookingId:           bookId,
+  destination:         place,
+  travellerType:       travType,
+  travellerCount:      count,
+  duration:            duration !== "—" ? Number(duration) : null,
+  departureCity:       city,
+  departureCode:       code,
+  departureDate:       date,
+  totalPrice:          TapToTrip.getPrice(place, days, count),
+  totalPriceFormatted: "₹" + priceFormatted,
+  traveller: { name: username, email, mobile },
+  status: "confirmed"
+});
+
+// ── Expose helpers to global scope for onclick handlers ─────────
+window._destImages  = destImages;
+window._formatDate  = formatDate;
+
+</script>
+
+<!-- Non-module helpers (receipt, WhatsApp, copy — need global scope for onclick) -->
+<script>
+function copyId(){
+  const id = document.getElementById("bookingIdText").textContent;
+  navigator.clipboard.writeText(id).then(()=>{
+    const btn = document.querySelector(".copy-btn");
+    btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    btn.style.color = "var(--aqua)"; btn.style.borderColor = "var(--aqua)";
+    setTimeout(()=>{ btn.innerHTML='<i class="fa-regular fa-copy"></i>'; btn.style.color=""; btn.style.borderColor=""; }, 2000);
+  });
+}
+
+function shareWhatsApp(){
+  const place    = localStorage.getItem("selectedPlace")  || "—";
+  const travType = localStorage.getItem("travellerType")  || "—";
+  const duration = localStorage.getItem("tripDuration")   || "—";
+  const city     = localStorage.getItem("departureCity")  || "—";
+  const code     = localStorage.getItem("departureCode")  || "";
+  const dateRaw  = localStorage.getItem("departureDate")  || "—";
+  const name     = localStorage.getItem("bookingName")    || "Traveller";
+  const mobile   = localStorage.getItem("bookingMobile")  || "—";
+  const bookId   = localStorage.getItem("bookingId")      || "TTT-000000";
+  const cityLabel = code ? `${city} (${code})` : city;
+  const dateLabel = window._formatDate ? window._formatDate(dateRaw) : dateRaw;
+  const durLabel  = duration !== "—" ? duration + " Days" : "—";
+  const priceLabel = "₹" + TapToTrip.getConfirmedPriceFormatted();
+
+  const msg =
+`✈️ *TAP TO TRIP — Booking Confirmed!*
+
+Hello ${name}! 🎉 Your dream trip has been successfully booked with us. Here's a summary of your booking:
+
+━━━━━━━━━━━━━━━━━━━━
+🌍 *Destination:* ${place}
+👥 *Travel Type:* ${travType}
+🌙 *Duration:* ${durLabel}
+🛫 *Departure City:* ${cityLabel}
+📅 *Travel Date:* ${dateLabel}
+💰 *Total Amount:* ${priceLabel}
+📞 *Contact:* ${mobile}
+━━━━━━━━━━━━━━━━━━━━
+
+🎫 *Booking ID:* ${bookId}
+
+What happens next?
+1️⃣ You will receive a confirmation email shortly.
+2️⃣ Our travel expert will call you within 24 hours.
+3️⃣ Visa & flight processing begins after confirmation.
+
+Thank you for choosing *Tap to Trip* — Premium Travel Experiences. We look forward to making your journey unforgettable! 🌟
+
+_For support, reply to this message or visit our website._`;
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+}
+
+function saveReceipt(){
+  const btn = document.getElementById("saveBtn");
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating…';
+  btn.disabled  = true;
+
+  const place    = localStorage.getItem("selectedPlace")  || "—";
+  const travType = localStorage.getItem("travellerType")  || "—";
+  const duration = localStorage.getItem("tripDuration")   || "—";
+  const city     = localStorage.getItem("departureCity")  || "—";
+  const code     = localStorage.getItem("departureCode")  || "";
+  const dateRaw  = localStorage.getItem("departureDate")  || "—";
+  const name     = localStorage.getItem("bookingName")    || "Traveller";
+  const email    = localStorage.getItem("bookingEmail")   || "—";
+  const mobile   = localStorage.getItem("bookingMobile")  || "—";
+  const bookId   = localStorage.getItem("bookingId")      || "TTT-000000";
+  const cityLabel = code ? `${city} (${code})` : city;
+  const dateLabel = window._formatDate ? window._formatDate(dateRaw) : dateRaw;
+  const durLabel  = duration !== "—" ? duration + " Days" : "—";
+  const today = new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"});
+  const priceLabel = "₹" + TapToTrip.getConfirmedPriceFormatted();
+
+  const W = 680, H = 1120;
+  const canvas = document.createElement("canvas");
+  canvas.width = W*2; canvas.height = H*2;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(2,2);
+
+  ctx.fillStyle="#f5f0e8"; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="rgba(180,160,120,0.07)"; ctx.lineWidth=1;
+  for(let i=0;i<H;i+=22){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke();}
+
+  ctx.fillStyle="#0b1220"; rr(ctx,0,0,W,180,0); ctx.fill();
+  const hBar=ctx.createLinearGradient(0,0,W,0);
+  hBar.addColorStop(0,"#1FA3B1");hBar.addColorStop(0.5,"#38c5d5");hBar.addColorStop(1,"#1FA3B1");
+  ctx.fillStyle=hBar; ctx.fillRect(0,0,W,5);
+  const hBot=ctx.createLinearGradient(0,0,W,0);
+  hBot.addColorStop(0,"transparent");hBot.addColorStop(0.3,"#C9A84C");hBot.addColorStop(0.7,"#C9A84C");hBot.addColorStop(1,"transparent");
+  ctx.fillStyle=hBot; ctx.fillRect(0,177,W,3);
+  ctx.fillStyle="#ffffff"; ctx.font="900 36px Georgia"; ctx.textAlign="center"; ctx.fillText("TAP TO TRIP",W/2,72);
+  ctx.fillStyle="rgba(31,163,177,0.9)"; ctx.font="500 10px Arial"; ctx.textAlign="center"; ctx.fillText("P  R  E  M  I  U  M   T  R  A  V  E  L",W/2,94);
+  [W/2-40,W/2,W/2+40].forEach(x=>{ctx.beginPath();ctx.arc(x,114,2,0,Math.PI*2);ctx.fillStyle="rgba(201,168,76,0.6)";ctx.fill();});
+  ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.font="600 9px Arial"; ctx.textAlign="center"; ctx.fillText("BOOKING RECEIPT",W/2,138);
+  ctx.fillStyle="#38c5d5"; ctx.font="700 15px Arial"; ctx.textAlign="center"; ctx.fillText(bookId,W/2,162);
+
+  let y=205;
+  ctx.fillStyle="#888070"; ctx.font="600 8px Arial"; ctx.textAlign="left"; ctx.fillText("ISSUED TO",48,y);
+  ctx.fillStyle="#1a1208"; ctx.font="700 14px Arial"; ctx.fillText(name,48,y+18);
+  ctx.fillStyle="#888070"; ctx.font="400 10px Arial"; ctx.fillText(email,48,y+34);
+  ctx.fillStyle="#888070"; ctx.font="600 8px Arial"; ctx.textAlign="right"; ctx.fillText("ISSUED ON",W-48,y);
+  ctx.fillStyle="#1a1208"; ctx.font="700 14px Arial"; ctx.fillText(today,W-48,y+18);
+  ctx.fillStyle="#888070"; ctx.font="400 10px Arial"; ctx.fillText("taptotrip.com",W-48,y+34);
+  y+=60;
+
+  function secRule(label,yp){
+    ctx.fillStyle="#0b1220"; ctx.fillRect(48,yp,W-96,28);
+    ctx.fillStyle="#C9A84C"; ctx.fillRect(48,yp,4,28);
+    ctx.fillStyle="rgba(255,255,255,0.85)"; ctx.font="700 9px Arial"; ctx.textAlign="left"; ctx.fillText(label,60,yp+18);
+  }
+
+  secRule("✈   DESTINATION DETAILS",y); y+=44;
+  ctx.fillStyle="#0b1220"; ctx.font="900 58px Georgia"; ctx.textAlign="center"; ctx.fillText(place.toUpperCase(),W/2,y+44); y+=56;
+  const dUl=ctx.createLinearGradient(W*0.2,0,W*0.8,0);
+  dUl.addColorStop(0,"transparent");dUl.addColorStop(0.3,"#1FA3B1");dUl.addColorStop(0.7,"#C9A84C");dUl.addColorStop(1,"transparent");
+  ctx.strokeStyle=dUl; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(W*0.2,y); ctx.lineTo(W*0.8,y); ctx.stroke(); y+=16;
+  ctx.fillStyle="#9a8f7a"; ctx.font="400 10px Arial"; ctx.textAlign="center"; ctx.fillText("P R E M I U M   T R A V E L   P A C K A G E",W/2,y); y+=36;
+
+  secRule("🗓   TRIP DETAILS",y); y+=44;
+  const tableRows=[
+    ["Travel Type",travType,"Duration",durLabel],
+    ["Departure City",cityLabel,"Travel Date",dateLabel],
+    ["Contact No.",mobile,"Email",email],
+    ["Total Amount",priceLabel,"Booking ID",bookId]
+  ];
+  tableRows.forEach((row,i)=>{
+    const ry=y+i*72;
+    ctx.fillStyle=i%2===0?"rgba(31,163,177,0.04)":"rgba(255,255,255,0.6)"; rr(ctx,48,ry,W-96,60,8); ctx.fill();
+    if(i===3){ ctx.fillStyle="rgba(201,168,76,0.08)"; rr(ctx,48,ry,W-96,60,8); ctx.fill(); }
+    ctx.fillStyle="#7a7060"; ctx.font="600 8px Arial"; ctx.textAlign="left"; ctx.fillText(row[0].toUpperCase(),64,ry+16);
+    ctx.fillStyle=i===3?"#C9A84C":"#15100a"; ctx.font="700 14px Arial"; ctx.fillText(row[1],64,ry+38);
+    ctx.strokeStyle="rgba(0,0,0,0.06)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(W/2,ry+10); ctx.lineTo(W/2,ry+50); ctx.stroke();
+    ctx.fillStyle="#7a7060"; ctx.font="600 8px Arial"; ctx.textAlign="left"; ctx.fillText(row[2].toUpperCase(),W/2+16,ry+16);
+    ctx.fillStyle="#15100a"; ctx.font="700 14px Arial"; ctx.fillText(row[3],W/2+16,ry+38);
+  });
+  y+=tableRows.length*72+12;
+
+  secRule("👤   TRAVELLER INFORMATION",y); y+=44;
+  ctx.fillStyle="rgba(255,255,255,0.8)"; rr(ctx,48,y,W-96,64,10); ctx.fill();
+  ctx.strokeStyle="rgba(31,163,177,0.2)"; ctx.lineWidth=1; ctx.stroke();
+  ctx.beginPath(); ctx.arc(90,y+32,20,0,Math.PI*2);
+  const avG=ctx.createLinearGradient(70,y+12,110,y+52); avG.addColorStop(0,"#1FA3B1"); avG.addColorStop(1,"#0a6b78");
+  ctx.fillStyle=avG; ctx.fill();
+  ctx.fillStyle="#fff"; ctx.font="bold 16px Arial"; ctx.textAlign="center"; ctx.fillText(name.charAt(0).toUpperCase(),90,y+38);
+  ctx.fillStyle="#15100a"; ctx.font="700 14px Arial"; ctx.textAlign="left"; ctx.fillText(name,120,y+26);
+  ctx.fillStyle="#7a7060"; ctx.font="400 11px Arial"; ctx.fillText(mobile+" · "+email,120,y+44);
+  y+=82;
+
+  const stampX=W-130,stampY=y+10;
+  ctx.beginPath(); ctx.arc(stampX,stampY,62,0,Math.PI*2); ctx.strokeStyle="rgba(31,163,177,0.35)"; ctx.lineWidth=1.5; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(stampX,stampY,52,0,Math.PI*2); ctx.strokeStyle="#1FA3B1"; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(stampX,stampY,49,0,Math.PI*2); ctx.fillStyle="rgba(31,163,177,0.07)"; ctx.fill();
+  ctx.fillStyle="#1FA3B1"; ctx.font="bold 22px Arial"; ctx.textAlign="center"; ctx.fillText("✈",stampX,stampY+8);
+  const arcTxt="TAP TO TRIP  ·  VERIFIED  ·  "; const arcR=42; const aStep=(Math.PI*2)/arcTxt.length;
+  ctx.fillStyle="#1FA3B1"; ctx.font="bold 6.5px Arial";
+  arcTxt.split("").forEach((ch,i)=>{const ang=-Math.PI/2+aStep*i;ctx.save();ctx.translate(stampX+arcR*Math.cos(ang),stampY+arcR*Math.sin(ang));ctx.rotate(ang+Math.PI/2);ctx.textAlign="center";ctx.fillText(ch,0,0);ctx.restore();});
+  ctx.fillStyle="#1FA3B1"; ctx.font="700 7px Arial"; ctx.textAlign="center"; ctx.fillText("CONFIRMED",stampX,stampY+26);
+  ctx.fillStyle="#9a8f7a"; ctx.font="400 9px Arial"; ctx.textAlign="left";
+  ["• This is an official booking receipt from Tap to Trip.","• Please retain this for your records.","• Subject to terms & conditions."].forEach((t,i)=>ctx.fillText(t,48,y+i*18+14));
+  y+=140;
+
+  ctx.fillStyle="#0b1220"; ctx.fillRect(0,H-90,W,90);
+  const fBar=ctx.createLinearGradient(0,0,W,0); fBar.addColorStop(0,"#C9A84C"); fBar.addColorStop(0.5,"#e8c97e"); fBar.addColorStop(1,"#C9A84C");
+  ctx.fillStyle=fBar; ctx.fillRect(0,H-90,W,3);
+  ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.font="500 9px Arial"; ctx.textAlign="center"; ctx.fillText("Thank you for choosing Tap to Trip — your journey begins here.",W/2,H-60);
+  ctx.fillStyle="rgba(31,163,177,0.7)"; ctx.font="600 9px Arial"; ctx.fillText("www.taptotrip.com  ·  support@taptotrip.com  ·  24×7 helpline",W/2,H-38);
+  ctx.fillStyle="#1FA3B1"; ctx.fillRect(0,H-4,W,4);
+
+  const link=document.createElement("a");
+  link.download="TapToTrip-Receipt-"+place+".png";
+  link.href=canvas.toDataURL("image/png");
+  link.click();
+
+  btn.innerHTML="<i class='fa-solid fa-check'></i> Receipt Saved!";
+  btn.style.borderColor="var(--aqua)"; btn.style.color="var(--aqua)"; btn.disabled=false;
+  setTimeout(()=>{btn.innerHTML="<i class='fa-solid fa-receipt'></i> Save Receipt";btn.style.borderColor="";btn.style.color="";},2500);
+}
+
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+history.pushState(null,null,location.href);
+window.addEventListener("popstate",()=>history.pushState(null,null,location.href));
+</script>
+</body>
+</html>
