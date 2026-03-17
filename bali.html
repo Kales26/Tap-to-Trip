@@ -605,31 +605,52 @@
 
         #capture { position:absolute; left:-9999px; width:800px; background:#05080e; padding:40px; }
 
+/*
+=================================================================
+  DESTINATION DETAIL PAGE — MOBILE RESPONSIVE CSS  (v3)
+
+  HOW TO USE:
+  1. Add class="location-pill" to the location div in your hero:
+     <div class="location-pill" style="position:absolute;top:100px;...">
+
+  2. Find the existing @media(max-width:768px){ ... } block in your
+     destination file's <style> tag and REPLACE IT ENTIRELY with
+     everything below.
+=================================================================
+*/
+
+/* ── 768px and below ── */
 @media(max-width:768px){
-  /* NAVBAR */
   .navbar{padding:14px 18px;}
   .nav-links a{margin-left:16px;font-size:13px;}
- 
-  /* HERO */
-  .hero{height:55vh;min-height:320px;}
+
+  .hero{height:55vh;min-height:320px;overflow:hidden;}
+  .hero-bg{
+    position:absolute;top:0;left:0;
+    width:100% !important;height:100% !important;
+    background-size:cover !important;background-position:center center !important;
+    transform:scale(1.05);
+    animation:slowZoom 10s ease-in-out infinite alternate;
+  }
   .hero h1{font-size:clamp(52px,14vw,100px);letter-spacing:3px;}
   .hero-meta{flex-wrap:wrap;justify-content:center;gap:8px;padding:0 16px;}
   .hero-pill{font-size:11px;padding:6px 13px;}
   .scroll-cue{display:none;}
- 
-  /* STATS STRIP */
-  .stats-strip{padding:0 16px;flex-wrap:wrap;}
+
+  /* LOCATION PILL */
+  .location-pill{top:68px !important;font-size:9px !important;letter-spacing:1.5px !important;padding:5px 12px !important;gap:5px !important;}
+  .location-pill i{font-size:9px !important;}
+
+  .stats-strip{padding:0 12px;flex-wrap:wrap;}
   .stat-item{flex:1 1 45%;min-width:0;}
   .stat-item:first-child{border-radius:0;}
   .stat-item:last-child{border-radius:0 0 16px 16px;}
   .stat-num{font-size:22px;}
   .stat-label{font-size:10px;}
- 
-  /* MAIN GRID — stack to single column */
+
   .main-grid{grid-template-columns:1fr;padding:18px 16px 40px;gap:20px;}
   .glass-card{padding:20px;}
- 
-  /* ITINERARY */
+
   .itinerary-top{flex-direction:column;align-items:flex-start;gap:14px;margin-bottom:20px;}
   .itinerary-top h2{font-size:22px;}
   .dl-btn{width:100%;text-align:center;}
@@ -639,8 +660,7 @@
   th{font-size:11px;padding:8px 6px;white-space:nowrap;}
   .slot{font-size:12px;padding:10px 28px 10px 10px;}
   .itinerary-footer{grid-template-columns:1fr;gap:10px;font-size:12px;}
- 
-  /* SIDE PANEL */
+
   .side-panel{gap:16px;}
   .mini-card{padding:18px;}
   .price-big{font-size:24px;}
@@ -649,16 +669,15 @@
   .weather-big{font-size:26px;}
   .month-row{gap:3px;}
   .month-pill{font-size:9px;padding:3px 7px;}
- 
-  /* HIGHLIGHTS */
+
   .highlights-container{padding:28px 16px;}
   .section-heading{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:20px;}
   .section-heading h2{font-size:22px;}
-  .h-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
-  .h-card{height:220px;border-radius:14px;}
+  .h-grid{grid-template-columns:repeat(2,1fr);gap:12px;row-gap:20px;}
+  .h-card{height:220px;border-radius:14px;overflow:visible;isolation:isolate;}
+  .h-card:hover{transform:translateY(-6px) scale(1.01);z-index:2;}
   .h-card h3{font-size:16px;}
- 
-  /* EXPLORE SECTION */
+
   .explore-section{padding:32px 16px 50px;}
   .explore-header{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:24px;}
   .explore-header h2{font-size:24px;}
@@ -666,42 +685,47 @@
   .explore-card-img{height:170px;}
   .explore-card-title{font-size:15px;}
   .explore-card-desc{font-size:11px;}
- 
-  /* MODAL */
+
   .modal-content{width:calc(100vw - 40px);padding:26px 20px;border-radius:18px;}
   .modal-content h3{font-size:18px;}
- 
-  /* FLOAT + WA BUTTONS */
+
   #floatBtn{bottom:18px;right:14px;height:46px;padding:0 18px 0 5px;}
   .float-icon-wrap{width:36px;height:36px;}
   .float-text-main{font-size:12px;}
   .float-text-sub{font-size:9px;}
   #waBtn{bottom:18px !important;left:14px !important;max-width:44px !important;}
 }
- 
-/* ── 480px and below (most phones) ── */
+
+/* ── 480px and below ── */
 @media(max-width:480px){
-  /* NAVBAR */
   .navbar{padding:12px 14px;}
   .nav-links a{margin-left:12px;font-size:12px;}
   .logo-img{height:22px;}
- 
-  /* HERO */
-  .hero{height:50vh;min-height:280px;}
+
+  .hero{height:50vh;min-height:280px;overflow:hidden;}
+  .hero-bg{
+    position:absolute;top:0;left:0;
+    width:100% !important;height:100% !important;
+    background-size:cover !important;background-position:center center !important;
+    transform:scale(1.05);
+    animation:slowZoom 10s ease-in-out infinite alternate;
+  }
   .hero h1{font-size:clamp(42px,13vw,80px);letter-spacing:2px;}
   .hero-meta{gap:6px;}
   .hero-pill{font-size:10px;padding:5px 11px;gap:5px;}
- 
-  /* STATS */
-  .stats-strip{padding:0 12px;}
-  .stat-item{flex:1 1 45%;padding:16px 12px;}
-  .stat-num{font-size:20px;}
- 
-  /* MAIN GRID */
+
+  /* LOCATION PILL — 480px */
+  .location-pill{top:60px !important;font-size:8px !important;letter-spacing:1px !important;padding:4px 10px !important;gap:4px !important;}
+  .location-pill i{font-size:8px !important;}
+
+  /* STATS — horizontal, no wrap */
+  .stats-strip{padding:0 10px;flex-wrap:nowrap !important;}
+  .stat-item{flex:1 1 0 !important;min-width:0 !important;padding:14px 8px;}
+  .stat-num{font-size:18px;}
+
   .main-grid{padding:14px 12px 32px;gap:16px;}
   .glass-card{padding:16px;border-radius:18px;}
- 
-  /* ITINERARY */
+
   .itinerary-top h2{font-size:20px;}
   .days-chips{gap:6px;}
   .day-chip{padding:6px 11px;font-size:11px;}
@@ -711,31 +735,26 @@
   .add-activity{font-size:11px;padding:8px;}
   .remove-btn{font-size:11px;top:5px;right:6px;}
   .itinerary-footer{font-size:11px;}
- 
-  /* PRICING */
+
   .mini-card{padding:15px;border-radius:16px;}
   .price-big{font-size:22px;}
   .rating-row{font-size:12px;}
   .price-includes span{font-size:10px;}
   .trust-badge{font-size:11px;}
- 
-  /* WEATHER */
+
   .weather-big{font-size:24px;}
   .weather-desc{font-size:12px;}
- 
-  /* CURRENCY */
   #idrResult{font-size:16px;}
- 
-  /* HIGHLIGHTS */
+
   .highlights-container{padding:24px 12px;}
   .section-heading h2{font-size:20px;}
   .sub-label{font-size:10px;}
-  .h-grid{grid-template-columns:1fr 1fr;gap:10px;}
-  .h-card{height:185px;border-radius:12px;}
+  .h-grid{grid-template-columns:1fr 1fr;gap:10px;row-gap:18px;}
+  .h-card{height:185px;border-radius:12px;overflow:visible;isolation:isolate;}
+  .h-card:hover{transform:translateY(-5px) scale(1.01);z-index:2;}
   .h-card h3{font-size:14px;}
   .h-badge{font-size:9px;padding:4px 10px;}
- 
-  /* EXPLORE */
+
   .explore-section{padding:24px 12px 40px;}
   .explore-header h2{font-size:20px;}
   .explore-header p{font-size:11px;}
@@ -748,62 +767,75 @@
   .explore-card-meta{font-size:10px;gap:10px;}
   .explore-book-btn{padding:9px;font-size:11px;}
   .explore-card-rating{font-size:11px;padding:3px 8px;}
- 
-  /* MODAL */
+
   .modal-content{width:calc(100vw - 28px);padding:22px 16px;}
   .modal-content h3{font-size:17px;margin-bottom:16px;}
   .modal-content input{padding:11px;font-size:13px;}
   .modal-buttons button{font-size:13px;padding:10px;}
- 
-  /* FLOAT + WA */
-  #floatBtn{
-    bottom:14px;right:12px;height:42px;
-    padding:0 14px 0 4px;gap:8px;
-  }
+
+  #floatBtn{bottom:14px;right:12px;height:42px;padding:0 14px 0 4px;gap:8px;}
   .float-icon-wrap{width:34px;height:34px;}
   .float-text-main{font-size:11px;}
   .float-text-sub{display:none;}
   #waBtn{bottom:14px !important;left:12px !important;}
 }
- 
-/* ── 390px and below (iPhone SE, small Androids) ── */
-@media(max-width:390px){
-  /* HERO */
-  .hero h1{font-size:clamp(36px,12vw,65px);}
+
+/* ── 400px and below — HERO NEVER SHRINKS, STATS ALWAYS HORIZONTAL ── */
+@media(max-width:400px){
+
+  /* HERO BG — locked to full cover, no shrink, no animation scale issues */
+  .hero{height:100vw !important;max-height:55vh !important;min-height:260px !important;overflow:hidden !important;}
+  .hero-bg{
+    position:absolute !important;
+    top:0 !important;left:0 !important;
+    width:100% !important;
+    height:100% !important;
+    min-height:100% !important;
+    background-size:cover !important;
+    background-position:center center !important;
+    transform:none !important;
+    animation:none !important;
+  }
+  .hero h1{font-size:clamp(34px,11vw,60px);}
   .hero-meta{gap:5px;}
   .hero-pill{font-size:9px;padding:4px 9px;}
- 
-  /* STATS — single column on very small screens */
-  .stat-item{flex:1 1 100%;}
-  .stat-item:last-child{border-radius:0 0 12px 12px;}
- 
+
+  /* LOCATION PILL — smallest size, tucked right under navbar */
+  .location-pill{
+    top:54px !important;
+    font-size:7.5px !important;
+    letter-spacing:0.8px !important;
+    padding:3px 9px !important;
+    gap:4px !important;
+  }
+  .location-pill i{font-size:7.5px !important;}
+
+  /* STATS — always stay in one horizontal row */
+  .stats-strip{flex-wrap:nowrap !important;overflow-x:auto;padding:0 8px;}
+  .stat-item{flex:1 1 0 !important;min-width:0 !important;padding:14px 6px !important;}
+  .stat-item:first-child{border-radius:0 !important;}
+  .stat-item:last-child{border-radius:0 0 10px 0 !important;}
+  .stat-num{font-size:15px !important;}
+  .stat-label{font-size:8px !important;letter-spacing:1px !important;}
+
   /* HIGHLIGHTS — single column */
-  .h-grid{grid-template-columns:1fr;}
+  .h-grid{grid-template-columns:1fr;row-gap:18px;}
   .h-card{height:200px;}
- 
-  /* ITINERARY */
+  .h-card:hover{transform:translateY(-5px) scale(1.01);z-index:2;}
+
   .glass-card{padding:14px;}
-  .days-chip{padding:5px 10px;font-size:10px;}
- 
-  /* EXPLORE */
+  .day-chip{padding:5px 10px;font-size:10px;}
+
   .explore-card{width:210px;}
   .explore-card-img{height:140px;}
- 
-  /* FLOAT + WA — shrink to icon-only */
-  #floatBtn{
-    width:42px;height:42px;border-radius:50%;
-    padding:0 !important;justify-content:center;
-    gap:0;
-  }
+
+  /* FLOAT + WA — icon-only circles */
+  #floatBtn{width:42px;height:42px;border-radius:50%;padding:0 !important;justify-content:center;gap:0;}
   .float-text{display:none;}
   .float-icon-wrap{width:32px;height:32px;}
-  #waBtn{
-    width:42px !important;height:42px !important;
-    max-width:42px !important;
-    border-radius:50% !important;
-    padding:0 !important;
-  }
+  #waBtn{width:42px !important;height:42px !important;max-width:42px !important;border-radius:50% !important;padding:0 !important;}
 }
+ 
         #itinerary, #highlights { scroll-margin-top:100px; }
         .nav-link { text-decoration:none; color:white; transition:0.3s; }
         .nav-link.active { color:var(--aqua); }
@@ -842,7 +874,7 @@
 <!-- HERO -->
 <section class="hero">
     <!-- BALI -->
-<div style="position:absolute;top:100px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:8px;background:rgba(5,8,14,0.6);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(12px);padding:7px 16px;border-radius:50px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);">
+<div class="location-pill"  style="position:absolute;top:100px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:8px;background:rgba(5,8,14,0.6);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(12px);padding:7px 16px;border-radius:50px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);">
     <i class="fa-solid fa-location-dot" style="color:#1FA3B1;font-size:10px;"></i>
     Indonesia &nbsp;·&nbsp; Southeast Asia
 </div>
