@@ -654,9 +654,7 @@
   .highlights-container{padding:28px 16px;}
   .section-heading{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:20px;}
   .section-heading h2{font-size:22px;}
-  .h-grid{grid-template-columns:repeat(2,1fr);gap:12px;row-gap:20px;}
-  .h-card{overflow:visible;isolation:isolate;}
-  .h-card:hover{transform:translateY(-6px) scale(1.01);z-index:2;}
+  .h-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
   .h-card{height:220px;border-radius:14px;}
   .h-card h3{font-size:16px;}
  
@@ -695,8 +693,8 @@
   .hero-pill{font-size:10px;padding:5px 11px;gap:5px;}
  
   /* STATS */
-  .stats-strip{padding:0 8px;}
-  .stat-item{flex:1 1 0;min-width:0;padding:14px 8px;}
+  .stats-strip{padding:0 12px;}
+  .stat-item{flex:1 1 45%;padding:16px 12px;}
   .stat-num{font-size:20px;}
  
   /* MAIN GRID */
@@ -732,8 +730,7 @@
   .highlights-container{padding:24px 12px;}
   .section-heading h2{font-size:20px;}
   .sub-label{font-size:10px;}
-  .h-grid{grid-template-columns:1fr 1fr;gap:10px;row-gap:18px;}
-  .h-card:hover{transform:translateY(-5px) scale(1.01);z-index:2;}
+  .h-grid{grid-template-columns:1fr 1fr;gap:10px;}
   .h-card{height:185px;border-radius:12px;}
   .h-card h3{font-size:14px;}
   .h-badge{font-size:9px;padding:4px 10px;}
@@ -771,22 +768,18 @@
  
 /* ── 390px and below (iPhone SE, small Androids) ── */
 @media(max-width:390px){
-  /* HERO — bg must never shrink */
-  .hero{min-height:260px !important;height:50vh !important;}
-  .hero-bg{min-height:260px !important;height:100% !important;width:100% !important;position:absolute !important;background-size:cover !important;background-position:center !important;}
+  /* HERO */
   .hero h1{font-size:clamp(36px,12vw,65px);}
   .hero-meta{gap:5px;}
   .hero-pill{font-size:9px;padding:4px 9px;}
  
-  /* STATS — keep horizontal even below 390px */
-  .stats-strip{flex-wrap:nowrap;overflow-x:auto;gap:0;}
-  .stat-item{flex:1 1 0;min-width:0;}
-  .stat-item:last-child{border-radius:0 0 12px 0;}
+  /* STATS — single column on very small screens */
+  .stat-item{flex:1 1 100%;}
+  .stat-item:last-child{border-radius:0 0 12px 12px;}
  
   /* HIGHLIGHTS — single column */
-  .h-grid{grid-template-columns:1fr;row-gap:18px;}
+  .h-grid{grid-template-columns:1fr;}
   .h-card{height:200px;}
-  .h-card:hover{transform:translateY(-5px) scale(1.01);z-index:2;}
  
   /* ITINERARY */
   .glass-card{padding:14px;}
@@ -809,36 +802,6 @@
     max-width:42px !important;
     border-radius:50% !important;
     padding:0 !important;
-  }
-}
- 
-/* ── LOCATION PILL — sits above destination name, scaled for mobile ── */
-@media(max-width:768px){
-  .location-pill{
-    top:70px !important;
-    font-size:9px !important;
-    letter-spacing:1.5px !important;
-    padding:5px 13px !important;
-    gap:6px !important;
-  }
-  .location-pill i{
-    font-size:9px !important;
-  }
-}
-@media(max-width:480px){
-  .location-pill{
-    top:62px !important;
-    font-size:8px !important;
-    letter-spacing:1px !important;
-    padding:4px 11px !important;
-    gap:5px !important;
-  }
-}
-@media(max-width:390px){
-  .location-pill{
-    top:56px !important;
-    font-size:7.5px !important;
-    padding:4px 10px !important;
   }
 }
         #itinerary, #highlights { scroll-margin-top:100px; }
@@ -879,7 +842,7 @@
 <!-- HERO -->
 <section class="hero">
     <!-- BALI -->
-<div class="location-pill" style="position:absolute;top:100px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:8px;background:rgba(5,8,14,0.6);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(12px);padding:7px 16px;border-radius:50px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);">
+<div style="position:absolute;top:100px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:8px;background:rgba(5,8,14,0.6);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(12px);padding:7px 16px;border-radius:50px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);">
     <i class="fa-solid fa-location-dot" style="color:#1FA3B1;font-size:10px;"></i>
     Indonesia &nbsp;·&nbsp; Southeast Asia
 </div>
