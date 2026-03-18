@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Booking Confirmed — Tap to Trip</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -143,18 +144,320 @@ body::after{
 .detail-item:nth-child(6){animation-delay:.70s;}
 .detail-item:nth-child(7){animation-delay:.78s;}
 
-@media(max-width:600px){
-  .navbar{padding:12px 20px;}.logo-img{height:22px;}
-  .main{padding:90px 16px 50px;align-items:flex-start;justify-content:center;}
-  .main > div{width:100%;max-width:100%;display:flex;flex-direction:column;align-items:center;}
-  .success-icon-wrap{width:100%;display:flex;justify-content:center;}
-  .confirm-card{width:100%;max-width:100%;padding:28px 18px;border-radius:22px;margin:0 auto;}
-  .card-title{font-size:30px;}.details-grid{grid-template-columns:1fr;}
-  .action-row{flex-direction:column;}
-  .btn-primary,.btn-secondary,.btn-whatsapp{justify-content:center;width:100%;}
-  .dest-name{font-size:26px;}.dest-strip{height:110px;}
-  .booking-id{font-size:11px;letter-spacing:2px;}
-  .firebase-toast{bottom:16px;right:16px;left:16px;max-width:unset;}
+/* =============================================
+   MOBILE RESPONSIVE STYLES — Booking Confirmed Page
+   Replace the existing @media(max-width:600px)
+   block with everything below.
+   ============================================= */
+
+/* ── TABLET (max 900px) ── */
+@media (max-width: 900px) {
+  .navbar {
+    padding: 14px 28px;
+  }
+  .main {
+    padding: 90px 20px 50px;
+  }
+  .confirm-card {
+    padding: 38px 36px;
+  }
+  .card-title {
+    font-size: 36px;
+  }
+  .details-grid {
+    gap: 12px;
+  }
+  .dest-name {
+    font-size: 32px;
+  }
+  .dest-strip {
+    height: 120px;
+  }
+  .action-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .btn-secondary,
+  .btn-whatsapp {
+    flex: 1;
+    min-width: 140px;
+    justify-content: center;
+  }
+}
+
+/* ── MOBILE (max 600px) ── */
+@media (max-width: 600px) {
+
+  /* --- NAVBAR --- */
+  .navbar {
+    padding: 12px 20px;
+  }
+  .logo-img {
+    height: 22px;
+  }
+
+  /* --- MAIN LAYOUT --- */
+  .main {
+    padding: 88px 14px 48px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .main > div {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* --- SUCCESS ICON --- */
+  .success-icon-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .success-circle {
+    width: 72px;
+    height: 72px;
+  }
+  .success-circle i {
+    font-size: 26px;
+  }
+
+  /* --- CONFIRM CARD --- */
+  .confirm-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 24px 16px 28px;
+    border-radius: 22px;
+    margin: 0 auto;
+  }
+  .confirm-card::after {
+    display: none; /* remove bottom glow blob on mobile */
+  }
+
+  /* --- CARD HEADER --- */
+  .card-header {
+    margin-bottom: 20px;
+  }
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: 4px;
+  }
+  .card-title {
+    font-size: 28px;
+    letter-spacing: -0.5px;
+  }
+  .card-subtitle {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  .header-line {
+    margin-top: 10px;
+    width: 40px;
+  }
+
+  /* --- BOOKING ID ROW --- */
+  .booking-id-wrap {
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .booking-id {
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 7px 16px;
+  }
+  .copy-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
+
+  /* --- DESTINATION STRIP --- */
+  .dest-strip {
+    height: 110px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+  .dest-strip-overlay {
+    padding: 0 18px;
+    gap: 12px;
+  }
+  .dest-name {
+    font-size: 26px;
+  }
+  .dest-badge {
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    gap: 4px;
+  }
+
+  /* --- TRAVELLER ROW --- */
+  .traveller-row {
+    padding: 14px 16px;
+    gap: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .traveller-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .traveller-name {
+    font-size: 14px;
+  }
+  .traveller-email {
+    font-size: 11px;
+  }
+
+  /* --- SECTION DIVIDER --- */
+  .section-divider {
+    margin: 18px 0 14px;
+  }
+  .section-divider-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+
+  /* --- DETAILS GRID — single column on mobile --- */
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .detail-item {
+    padding: 14px 16px;
+    border-radius: 12px;
+    gap: 12px;
+  }
+  .detail-item:hover {
+    transform: none; /* no hover lift on touch */
+  }
+  .detail-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .detail-icon i {
+    font-size: 14px;
+  }
+  .detail-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    margin-bottom: 3px;
+  }
+  .detail-value {
+    font-size: 14px;
+  }
+  .detail-value.price-highlight {
+    font-size: 14px;
+  }
+
+  /* --- NEXT STEPS --- */
+  .next-steps {
+    padding: 16px 14px;
+    border-radius: 12px;
+  }
+  .next-steps-title {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    margin-bottom: 12px;
+  }
+  .next-step-item {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .step-dot {
+    width: 20px;
+    height: 20px;
+    font-size: 8px;
+    flex-shrink: 0;
+  }
+  .step-text {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  /* --- ACTION BUTTONS --- */
+  .action-row {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .btn-primary,
+  .btn-secondary,
+  .btn-whatsapp {
+    justify-content: center;
+    width: 100%;
+    font-size: 13px;
+    padding: 14px;
+    min-height: 48px;
+  }
+
+  /* --- FIREBASE TOAST --- */
+  .firebase-toast {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: unset;
+    font-size: 12px;
+    padding: 10px 16px;
+    border-radius: 12px;
+  }
+  .firebase-toast i {
+    font-size: 13px;
+  }
+}
+
+/* ── EXTRA SMALL (max 380px) ── */
+@media (max-width: 380px) {
+  .main {
+    padding: 82px 10px 40px;
+  }
+  .confirm-card {
+    padding: 20px 12px 24px;
+  }
+  .card-title {
+    font-size: 24px;
+  }
+  .dest-strip {
+    height: 95px;
+  }
+  .dest-name {
+    font-size: 22px;
+  }
+  .detail-item {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .detail-value {
+    font-size: 13px;
+  }
+  .booking-id {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    padding: 6px 12px;
+  }
+  .btn-primary,
+  .btn-secondary,
+  .btn-whatsapp {
+    font-size: 12px;
+    padding: 12px;
+  }
+  .step-text {
+    font-size: 11px;
+  }
+  .traveller-name {
+    font-size: 13px;
+  }
 }
 </style>
 </head>
