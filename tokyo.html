@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tokyo – Tap to Trip</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@700&family=Montserrat:wght@300;600&family=Playfair+Display:wght@700;800;900&family=Cormorant+Garamond:wght@700&family=Yeseva+One&family=Abril+Fatface&family=Shippori+Mincho:wght@700;800&family=Bodoni+Moda:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -596,24 +597,235 @@
 
         #capture { position:absolute; left:-9999px; width:800px; background:#05080e; padding:40px; }
 
-        @media(max-width:768px){
-            .navbar { padding:15px 20px; }
-            .hero { height:60vh; }
-            .hero-meta { flex-wrap:wrap; justify-content:center; gap:10px; }
-            .stats-strip { padding:0 20px; flex-wrap:wrap; }
-            .stat-item { flex:1 1 45%; }
-            .stat-item:first-child { border-radius:0; }
-            .stat-item:last-child  { border-radius:0 0 16px 16px; }
-            .main-grid { grid-template-columns:1fr; padding:20px 20px 40px; }
-            .glass-card { padding:25px; }
-            .highlights-container { padding:30px 20px; }
-            .explore-section { padding:40px 20px 60px; }
-            .h-grid { grid-template-columns:repeat(2,1fr); gap:15px; }
-            .h-card { height:250px; }
-            .itinerary-footer { grid-template-columns:1fr; gap:14px; }
-            table { display:block; overflow-x:auto; }
-            #floatBtn { bottom:20px; right:16px; }
-        }
+/* ══════════════════════════════════════════
+   MOBILE RESPONSIVE — TOKYO PAGE
+   Replace your existing @media(max-width:768px) block with this
+══════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+    /* ── NAVBAR ── */
+    .navbar {
+        padding: 14px 18px;
+    }
+    .logo-img { height: 22px; }
+    .nav-links a {
+        margin-left: 14px;
+        font-size: 13px;
+    }
+
+    /* ── HERO — full viewport height, image fills screen ── */
+    .hero {
+        height: 100svh;          /* use small viewport height so address bar doesn't clip */
+        min-height: 100vw;       /* at least as tall as wide on portrait */
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 20px;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .hero-bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center center;
+        /* Disable the desktop zoom animation on mobile for performance */
+        animation: none;
+        transform: scale(1);
+    }
+    .hero h1 {
+        font-size: clamp(72px, 22vw, 120px);
+        letter-spacing: 8px;
+    }
+    .hero-meta {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+    .hero-pill {
+        font-size: 11px;
+        padding: 6px 14px;
+    }
+    /* location chip inside hero */
+    .hero > div[style*="location-dot"] {
+        top: 70px !important;
+        font-size: 10px !important;
+        padding: 5px 12px !important;
+    }
+    .scroll-cue {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+        padding: 0 16px;
+        flex-wrap: wrap;
+        gap: 0;
+    }
+    .stat-item {
+        flex: 1 1 50%;
+        max-width: 100%;
+        padding: 16px 12px;
+    }
+    .stat-item:first-child  { border-radius: 0; }
+    .stat-item:last-child   { border-radius: 0 0 16px 16px; }
+    .stat-item:nth-child(2) { border-left: none; }
+    .stat-item:nth-child(3) { border-top: none; }
+    .stat-item:nth-child(4) { border-top: none; border-left: none; }
+    .stat-num  { font-size: 22px; }
+    .stat-label { font-size: 10px; }
+
+    /* ── MAIN GRID ── */
+    .main-grid {
+        grid-template-columns: 1fr;
+        padding: 20px 16px 40px;
+        gap: 20px;
+    }
+
+    /* ── ITINERARY CARD ── */
+    .glass-card {
+        padding: 20px 16px;
+        border-radius: 18px;
+    }
+    .itinerary-top {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .itinerary-top h2 { font-size: 22px; }
+    .dl-btn { font-size: 12px; padding: 8px 14px; }
+
+    /* Days chips */
+    .days-selector-wrap { padding: 14px; }
+    .days-chips { gap: 6px; }
+    .day-chip {
+        padding: 7px 14px;
+        font-size: 12px;
+    }
+
+    /* Table scroll */
+    .glass-card table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(31,163,177,0.3) transparent;
+    }
+    .glass-card table thead,
+    .glass-card table tbody,
+    .glass-card table tr { display: table; width: 100%; table-layout: fixed; }
+    .glass-card table { width: 100%; }
+    th { font-size: 11px; padding: 8px 6px; }
+    .slot { font-size: 12px; padding: 10px 28px 10px 10px; }
+
+    /* Footer */
+    .itinerary-footer {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        font-size: 12px;
+    }
+
+    /* ── SIDEBAR ── */
+    .side-panel { gap: 16px; }
+    .mini-card {
+        padding: 18px 16px;
+        border-radius: 16px;
+    }
+    .mini-card h4 { font-size: 11px; margin-bottom: 10px; }
+    .price-big { font-size: 26px; }
+    .btn-main { padding: 14px; font-size: 14px; }
+    .weather-big { font-size: 28px; }
+
+    /* Pack list */
+    .pack-item { font-size: 12px; padding: 6px 8px; }
+
+    /* Month pills */
+    .month-row { gap: 3px; }
+    .month-pill { font-size: 9px; padding: 3px 6px; }
+
+    /* ── HIGHLIGHTS ── */
+    .highlights-container { padding: 30px 16px; }
+    .section-heading h2 { font-size: 22px; }
+    .h-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .h-card { height: 200px; border-radius: 14px; }
+    .h-card h3 { font-size: 15px; }
+    .h-badge { font-size: 9px; padding: 4px 10px; }
+
+    /* ── EXPLORE SECTION ── */
+    .explore-section { padding: 36px 16px 60px; }
+    .explore-header { flex-direction: column; gap: 6px; margin-bottom: 24px; }
+    .explore-header h2 { font-size: 24px; }
+
+    /* Hide side fade gradients on mobile (they clip cards) */
+    .explore-track-wrap::before,
+    .explore-track-wrap::after { width: 30px; }
+
+    .explore-track {
+        padding: 10px 0 40px;
+        gap: 14px;
+        /* snap for mobile swipe */
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    .explore-card {
+        width: 260px;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+    }
+    /* Remove staggered offset on mobile */
+    .explore-card:nth-child(odd),
+    .explore-card:nth-child(even) { margin-top: 0; }
+
+    .explore-card-img { height: 160px; }
+    .explore-card-body { padding: 14px 16px 16px; }
+    .explore-card-title { font-size: 15px; }
+    .explore-card-desc { font-size: 11px; }
+    .explore-card-meta { font-size: 10px; gap: 10px; }
+    .explore-book-btn { font-size: 11px; padding: 10px; }
+
+    /* ── FLOAT BUTTON ── */
+    #floatBtn {
+        bottom: 18px;
+        right: 14px;
+        height: 46px;
+        padding: 0 18px 0 5px;
+        gap: 10px;
+    }
+    .float-icon-wrap { width: 36px; height: 36px; }
+    .float-text-main { font-size: 12px; }
+    .float-text-sub  { font-size: 9px; }
+
+    /* ── WHATSAPP BUTTON ── */
+    #waBtn {
+        bottom: 18px !important;
+        left: 14px !important;
+        width: 46px !important;
+        height: 46px !important;
+        max-width: 46px !important;
+    }
+
+    /* ── MODAL ── */
+    .modal-content { width: 90vw; padding: 26px 20px; }
+    .modal-content h3 { font-size: 18px; }
+}
+
+/* ── Extra small phones (≤380px) ── */
+@media (max-width: 380px) {
+    .hero h1 {
+        font-size: clamp(58px, 20vw, 80px);
+        letter-spacing: 5px;
+    }
+    .h-grid { grid-template-columns: 1fr; }
+    .h-card { height: 220px; }
+    .day-chip { padding: 6px 10px; font-size: 11px; }
+    .explore-card { width: 240px; }
+}
         #itinerary, #highlights { scroll-margin-top:100px; }
         .nav-link { text-decoration:none; color:white; transition:0.3s; }
         .nav-link.active { color:var(--aqua); }
