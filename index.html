@@ -222,21 +222,24 @@ body::after{content:"";position:fixed;inset:0;background-image:url("data:image/s
   .nav-links{position:absolute;top:62px;left:0;width:100%;background:rgba(4,7,13,.97);backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;max-height:0;overflow:hidden;transition:max-height .4s ease;}
   .nav-links a{margin:14px 0;font-size:14px;}
   .nav-links.active{max-height:600px;overflow:visible;}
-  .nav-search{margin-left:0;margin-top:4px;margin-bottom:16px;width:82%;}
+  .nav-search{margin-left:0;margin-top:4px;margin-bottom:16px;width:82%;position:relative;}
   .nav-search input{width:100%;padding:10px 36px 10px 38px;font-size:13px;}
-  .search-suggestions{position:fixed !important;top:auto;left:5vw !important;transform:none !important;width:90vw !important;max-height:260px;overflow-y:auto;z-index:99999 !important;}
+  .search-suggestions{position:absolute !important;top:calc(100% + 6px) !important;left:0 !important;width:100% !important;max-height:220px;overflow-y:auto;z-index:99999 !important;transform:none !important;}
   .logo-img{height:22px;}
   .hero{padding:0 22px;text-align:center;}
   .hero-content{width:100%;}
-  .hero h1{font-size:40px;letter-spacing:-1px;}
-  .hero p{font-size:14px;margin-bottom:28px;max-width:100%;}
+  .hero h1{font-size:28px;letter-spacing:-0.5px;}
+  .hero p{font-size:11px;margin-bottom:18px;max-width:100%;line-height:1.7;}
   .scroll-hint{display:none;}
-  .explore-btn,.plan-btn{padding:12px 20px;font-size:12px;margin-left:0;}
+  .explore-btn,.plan-btn{padding:9px 16px;font-size:10px;margin-left:0;}
   .hero-btn-group{gap:10px;justify-content:center;}
-  .hero-tag{font-size:10px;letter-spacing:2px;padding:6px 14px;}
+  .hero-tag{font-size:9px;letter-spacing:1.5px;padding:5px 11px;}
   .item .content{left:36px;width:78%;}
-  .top-title{top:90px;left:20px;}
-  .top-title-main{font-size:34px;}
+  .content button{padding:7px 16px;font-size:10px;}
+  .top-title{top:56px;left:14px;}
+  .top-title-main{font-size:22px;}
+  .top-title-sup{font-size:8px;letter-spacing:3px;}
+  .top-title::after{width:28px;margin-top:5px;}
   .container{height:90vh;}
   .slide .item{width:110px;height:170px;border-radius:14px;}
   .slide .item:nth-child(1),.slide .item:nth-child(2){width:100%;height:100%;border-radius:0;transform:none;}
@@ -244,28 +247,35 @@ body::after{content:"";position:fixed;inset:0;background-image:url("data:image/s
   .slide .item:nth-child(4){left:calc(60% + 12px + 122px);}
   .slide .item:nth-child(5){left:calc(60% + 12px + 244px);}
   .slide .item:nth-child(n+6){left:calc(60% + 12px + 366px);opacity:0;}
-  .namee{font-size:30px;}
+  .namee{font-size:22px;}
   .des{font-size:11px;width:210px;max-width:210px;}
   #destinations{min-height:auto;margin-bottom:-2px;}
   #packages{margin-top:-2px;}
-  .button button{width:40px;height:40px;}
+  .button button{width:32px;height:32px;font-size:11px;}
   .section{padding:40px 20px;}
-  .title-main{font-size:34px;}
+  .title-main .hl{font-size:28px !important;font-family:'Big Shoulders Display',sans-serif !important;}
+  .title-main{font-size:28px;}
   .card{width:175px;height:240px;border-radius:16px;}
   .card-text .name{font-size:18px;}
   .sub{font-size:8px;}
-  .arrow-btns button{width:34px;height:34px;font-size:12px;}
+  .arrow-btns{display:flex;flex-direction:row;align-items:center;gap:6px;}
+  .arrow-btns button{width:30px;height:30px;font-size:11px;margin-left:0;}
   .why-grid{grid-template-columns:1fr;gap:55px;}
   .col{align-items:center;max-width:100%;}
   .perk{justify-content:center;text-align:center;}
   .why-panel{border-radius:16px;padding:55px 22px;}
-  .why h2{font-size:44px;}
+  .why h2{font-size:38px;}
+  .why h2 span{font-size:38px !important;}
   .tt-footer{padding:50px 24px 25px;}
   .footer-inner{gap:28px;padding:36px 24px 0;grid-template-columns:1fr 1fr;}
   .footer-logo{height:24px;}
   .footer-bottom{flex-direction:column;gap:12px;padding:18px 24px 0;text-align:center;}
   .footer-bottom-links{justify-content:center;}
+  .footer-trust{display:flex;flex-direction:row;flex-wrap:nowrap;gap:8px;justify-content:flex-start;}
+  .footer-trust-badge{flex:1;justify-content:center;min-width:0;}
   .pkg-divider{padding:0 20px;}
+  .icons{display:flex;flex-direction:row;flex-wrap:nowrap;gap:8px;}
+  .icons i{width:34px;height:34px;font-size:13px;flex-shrink:0;}
 }
 @media(max-width:400px){
   .des{font-size:10px;width:150px;max-width:150px;}
@@ -510,7 +520,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   const destinations=[{name:"Dubai",page:"dubai.html"},{name:"Paris",page:"paris.html"},{name:"Bali",page:"bali.html"},{name:"Switzerland",page:"swiss.html"},{name:"Tokyo",page:"tokyo.html"},{name:"New York",page:"newyork.html"},{name:"Santorini",page:"santorini.html"},{name:"Thailand",page:"thailand.html"},{name:"Nepal",page:"nepal.html"},{name:"New Zealand",page:"newzealand.html"},{name:"Seychelles",page:"seychelles.html"},{name:"Mauritius",page:"mauritius.html"},{name:"Maldives",page:"maldives.html"},{name:"Iceland",page:"iceland.html"},{name:"Norway",page:"norway.html"},{name:"Scotland",page:"scotland.html"}];
   const inp=document.getElementById("searchInput"),box=document.getElementById("suggestions"),cls=document.getElementById("closeSearch");
   if(!inp)return;
-  function positionSuggestions(){if(window.innerWidth<=600){const rect=inp.getBoundingClientRect();box.style.top=(rect.bottom+6)+"px";box.style.left="5vw";box.style.width="90vw";}else{box.style.top=box.style.left=box.style.width="";}}
+  function positionSuggestions(){if(window.innerWidth>600){box.style.top=box.style.left=box.style.width="";}}
   inp.addEventListener("input",function(){positionSuggestions();const v=this.value.toLowerCase().trim();box.innerHTML="";if(!v){box.style.display="none";cls.style.display="none";return;}cls.style.display="block";const f=destinations.filter(d=>d.name.toLowerCase().includes(v));if(!f.length){const d=document.createElement("div");d.textContent="No destination found";d.style.opacity=".5";d.style.cursor="default";box.appendChild(d);}else{f.forEach(d=>{const div=document.createElement("div");div.textContent=d.name;div.onclick=()=>{window.location.href=d.page;};box.appendChild(div);});}box.style.display="block";});
   cls.addEventListener("click",()=>{inp.value="";box.style.display="none";cls.style.display="none";});
 });
