@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login / Booking — Tap to Trip</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -219,13 +220,177 @@ body::after{
   50%{box-shadow:0 0 0 14px rgba(31,163,177,0);}
 }
 
-/* ── MOBILE ── */
-@media(max-width:600px){
-  .navbar{padding:12px 20px;}
-  .logo-img{height:20px;}
-  .door-glass{padding:28px 22px;margin-top:70px;border-radius:22px;}
-  .door-glass h2{font-size:28px;}
-  .submit-btn{font-size:13px;padding:13px;}
+/* =============================================
+   MOBILE RESPONSIVE STYLES — Login / Booking Page
+   Replace the existing @media(max-width:600px)
+   block with everything below.
+   ============================================= */
+
+/* ── TABLET (max 900px) ── */
+@media (max-width: 900px) {
+  .navbar {
+    padding: 14px 28px;
+  }
+  .door-glass {
+    width: 88%;
+    padding: 28px 28px;
+    margin-top: 76px;
+  }
+  .door-glass h2 {
+    font-size: 30px;
+  }
+}
+
+/* ── MOBILE (max 600px) ── */
+@media (max-width: 600px) {
+
+  /* --- BODY: allow scrolling so keyboard doesn't hide fields --- */
+  html, body {
+    overflow: visible;
+    height: auto;
+  }
+  .door-section {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+    align-items: flex-start;
+    padding-bottom: 40px;
+  }
+
+  /* --- NAVBAR --- */
+  .navbar {
+    padding: 12px 20px;
+  }
+  .logo-img {
+    height: 20px;
+  }
+
+  /* --- GLASS PANEL --- */
+  .door-glass {
+    width: 95%;
+    max-width: 480px;
+    padding: 24px 18px 28px;
+    margin-top: 70px;
+    border-radius: 22px;
+  }
+
+  /* --- HEADING --- */
+  .glass-eyebrow {
+    font-size: 9px;
+    letter-spacing: 4px;
+  }
+  .door-glass h2 {
+    font-size: 26px;
+    letter-spacing: -0.5px;
+  }
+  .glass-header {
+    margin-bottom: 14px;
+  }
+  .glass-header::after {
+    width: 40px;
+    margin-top: 7px;
+  }
+
+  /* --- TRIP SUMMARY CHIPS --- */
+  .trip-summary {
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+  .chip {
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    gap: 4px;
+  }
+  .chip i {
+    font-size: 8px;
+  }
+
+  /* --- FORM --- */
+  .form-group {
+    margin-bottom: 10px;
+  }
+  .form-group label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .form-group input {
+    font-size: 14px;
+    padding: 11px 14px 11px 38px;
+    border-radius: 12px;
+    /* Larger tap target */
+    min-height: 44px;
+  }
+  .input-icon {
+    font-size: 12px;
+    left: 14px;
+  }
+  .field-hint {
+    font-size: 10px;
+    margin-top: 3px;
+  }
+  .char-counter {
+    font-size: 9px;
+    right: 12px;
+  }
+
+  /* --- SUBMIT BUTTON --- */
+  .submit-btn {
+    font-size: 13px;
+    padding: 14px;
+    margin-top: 16px;
+    /* Comfortable tap target */
+    min-height: 48px;
+    border-radius: 50px;
+  }
+
+  /* --- TOAST (success screen) --- */
+  .toast-title {
+    font-size: 28px;
+  }
+  .toast-sub {
+    font-size: 12px;
+    text-align: center;
+    padding: 0 24px;
+  }
+  .toast-icon {
+    width: 60px;
+    height: 60px;
+  }
+  .toast-icon i {
+    font-size: 22px;
+  }
+}
+
+/* ── EXTRA SMALL (max 380px) ── */
+@media (max-width: 380px) {
+  .door-glass {
+    padding: 20px 14px 24px;
+    margin-top: 68px;
+  }
+  .door-glass h2 {
+    font-size: 22px;
+  }
+  .form-group input {
+    font-size: 13px;
+    padding: 10px 12px 10px 36px;
+  }
+  .input-icon {
+    font-size: 11px;
+    left: 12px;
+  }
+  .submit-btn {
+    font-size: 12px;
+    padding: 13px;
+  }
+  .chip {
+    font-size: 8.5px;
+    padding: 3px 8px;
+  }
+  .toast-title {
+    font-size: 24px;
+  }
 }
 </style>
 </head>
